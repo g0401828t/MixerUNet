@@ -3,37 +3,33 @@
 --filenames_file ./train_test_inputs/eigen_train_files_with_gt.txt
 --input_height 352
 --input_width 704
-
---num_epochs 50
---learning_rate 1e-4
---weight_decay 1e-2
---adam_eps 1e-3
-
 --max_depth 80
 
+--log_directory ./outputs
+--log_freq 100
+
+--weight_decay 1e-2
 --batch_size 1
+--adam_eps 1e-3
+--num_epochs 50
+--learning_rate 1e-4
 
 --do_random_rotate
 --degree 1.0
 --do_kb_crop
 
-
 --num_threads 1
-
---log_directory ./outputs
 --dist_url tcp://127.0.0.1:2345
 
---log_freq 100
 --do_online_eval
---eval_freq 500
 --data_path_eval ../dataset/kitti_dataset/
 --gt_path_eval ../dataset/kitti_dataset/data_depth_annotated/all/
 --filenames_file_eval ./train_test_inputs/eigen_test_files_with_gt.txt
 --min_depth_eval 1e-3
 --max_depth_eval 80
---eval_summary_directory ./outputs/eval/
 --garg_crop
-
+--eval_freq 500
+--eval_summary_directory ./outputs/eval/
 
 
 
