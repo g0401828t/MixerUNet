@@ -271,7 +271,6 @@ class Block(nn.Module):
             self.ffn_norm.weight.copy_(np2th(weights[pjoin(ROOT, MLP_NORM, "scale")]))
             self.ffn_norm.bias.copy_(np2th(weights[pjoin(ROOT, MLP_NORM, "bias")]))
 
-
 class Encoder(nn.Module):
     def __init__(self, config, vis):
         super(Encoder, self).__init__()

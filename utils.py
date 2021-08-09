@@ -5,7 +5,6 @@ from scipy.ndimage import zoom
 import torch.nn as nn
 import SimpleITK as sitk
 
-
 class DiceLoss(nn.Module):
     def __init__(self, n_classes):
         super(DiceLoss, self).__init__()

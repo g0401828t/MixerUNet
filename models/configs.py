@@ -23,7 +23,6 @@ def get_b16_config():
     config.activation = 'softmax'
     return config
 
-
 def get_testing():
     """Returns a minimal configuration for testing."""
     config = ml_collections.ConfigDict()

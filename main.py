@@ -27,13 +27,11 @@ from models.model import VisionTransformer as ViT_seg
 from models.model import CONFIGS as CONFIGS_ViT_seg
 from models.model import *
 
-
 def convert_arg_line_to_args(arg_line):
     for arg in arg_line.split():
         if not arg.strip():
             continue
         yield arg
-
 
 parser = argparse.ArgumentParser(description="BTS PyTorch implementation.", fromfile_prefix_chars="@")
 parser.convert_arg_line_to_args = convert_arg_line_to_args
