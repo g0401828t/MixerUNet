@@ -193,7 +193,7 @@ class Embeddings(nn.Module):
                                        out_channels=config.hidden_size,
                                        kernel_size=patch_size,
                                        stride=patch_size)
-        self.position_embeddings = nn.Parameter(torch.zeros(1, n_patches, config.hidden_size))
+        # self.position_embeddings = nn.Parameter(torch.zeros(1, n_patches, config.hidden_size))
 
         self.dropout = nn.Dropout(config.transformer["dropout_rate"])
 
@@ -455,26 +455,26 @@ class VisionTransformer(nn.Module):
 
             posemb = np2th(weights["Transformer/posembed_input/pos_embedding"])
 
-            posemb_new = self.transformer.embeddings.position_embeddings
-            if posemb.size() == posemb_new.size():
-                self.transformer.embeddings.position_embeddings.copy_(posemb)
-            elif posemb.size()[1]-1 == posemb_new.size()[1]:
-                posemb = posemb[:, 1:]
-                self.transformer.embeddings.position_embeddings.copy_(posemb)
-            else:
-                logger.info("load_pretrained: resized variant: %s to %s" % (posemb.size(), posemb_new.size()))
-                ntok_new = posemb_new.size(1)
-                if self.classifier == "seg":
-                    _, posemb_grid = posemb[:, :1], posemb[0, 1:]
-                gs_old = int(np.sqrt(len(posemb_grid)))
-                gs_new = int(np.sqrt(ntok_new))
-                print('load_pretrained: grid-size from %s to %s' % (gs_old, gs_new))
-                posemb_grid = posemb_grid.reshape(gs_old, gs_old, -1)
-                zoom = (gs_new / gs_old, gs_new / gs_old, 1)
-                posemb_grid = ndimage.zoom(posemb_grid, zoom, order=1)  # th2np
-                posemb_grid = posemb_grid.reshape(1, gs_new * gs_new, -1)
-                posemb = posemb_grid
-                self.transformer.embeddings.position_embeddings.copy_(np2th(posemb))
+            # posemb_new = self.transformer.embeddings.position_embeddings
+            # if posemb.size() == posemb_new.size():
+            #     self.transformer.embeddings.position_embeddings.copy_(posemb)
+            # elif posemb.size()[1]-1 == posemb_new.size()[1]:
+            #     posemb = posemb[:, 1:]
+            #     self.transformer.embeddings.position_embeddings.copy_(posemb)
+            # else:
+            #     logger.info("load_pretrained: resized variant: %s to %s" % (posemb.size(), posemb_new.size()))
+            #     ntok_new = posemb_new.size(1)
+            #     if self.classifier == "seg":
+            #         _, posemb_grid = posemb[:, :1], posemb[0, 1:]
+            #     gs_old = int(np.sqrt(len(posemb_grid)))
+            #     gs_new = int(np.sqrt(ntok_new))
+            #     print('load_pretrained: grid-size from %s to %s' % (gs_old, gs_new))
+            #     posemb_grid = posemb_grid.reshape(gs_old, gs_old, -1)
+            #     zoom = (gs_new / gs_old, gs_new / gs_old, 1)
+            #     posemb_grid = ndimage.zoom(posemb_grid, zoom, order=1)  # th2np
+            #     posemb_grid = posemb_grid.reshape(1, gs_new * gs_new, -1)
+            #     posemb = posemb_grid
+            #     self.transformer.embeddings.position_embeddings.copy_(np2th(posemb))
 
             # Encoder whole
             for bname, block in self.transformer.encoder.named_children():
