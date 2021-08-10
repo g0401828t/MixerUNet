@@ -16,7 +16,7 @@ When loading the data, dataloader.py crops the images to [352, 1216] which is di
 TransUNet code only takes inputs with same width and height. However, Kitti dataset has different sizes of width and height.  
 So I modified the TransUNet code to take inputs with different sized width and height.  
 Only modifying the Encoder part was necessary.  
-## Training
+## Training (without position embeddings)
 When training, images are random croped to [352, 704].  
 The TransUnet's reshape part between Encoder and Decoder relys on the input image size so I modified the code for this issue.  
 Modified the calss DecoderCup() in model.py
@@ -26,4 +26,8 @@ Due to this, the dimenstion for reshaping in between encoder and decoder was an 
 I modified the code by taking the input image size as input for DecoderCup() evertime to address the issue.  
 I think this is a little bit awkward. Need to think about this method again because it can cause an ill-training of the network.
 ## Testing and saving the output image(depth_estimated).
-in progress..
+Because trained without position embeddings,
+when loading state_dict => model.load_state_dict(checkpoint['model'], strict=False)
+to not load position embeddings weight or any other missing weights.
+
+Code is quite messy, will update ASAP
