@@ -10,6 +10,8 @@ semantic segmentation model "TransUnet" => Refrence for network code.
 
 https://github.com/Beckschen/TransUNet
 
+<img width="1242" alt="image" src="https://user-images.githubusercontent.com/55650445/128837226-80bc8950-da15-4ac2-945e-50009cf0da49.png">
+
 <img width="1101" alt="image" src="https://user-images.githubusercontent.com/55650445/128836980-5f419cd3-d213-406b-9a2c-6dd7efe52732.png">
 
 
