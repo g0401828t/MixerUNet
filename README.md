@@ -36,3 +36,12 @@ when loading state_dict => model.load_state_dict(checkpoint['model'], strict=Fal
 to not load position embeddings weight or any other missing weights.
 
 Code is quite messy, will update ASAP
+
+
+# 1st attempt
+without pretrained weights and position embeddings  
+|Best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
+|------|---|---|---|---|---|---|---|---|---|
+||0.90746|0.98142|0.99575|12.19566|3.19173|0.08877|0.13404| 0.03874|0.39217|
+
+![image](https://user-images.githubusercontent.com/55650445/128855607-de5267a2-7b96-463f-b494-c435362a9b1b.png)
