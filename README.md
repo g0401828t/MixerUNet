@@ -37,8 +37,10 @@ to not load position embeddings weight or any other missing weights.
 
 Code is quite messy, will update ASAP
 
-# 1st trial
-## without pretraining and position enmbeddings
+
+
+
+# 1st trial (without pretraining and position enmbeddings)
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
 |  |0.90746|0.98142|0.99575|12.19566|3.19173|0.08877|0.13404|0.03874|0.39217|
