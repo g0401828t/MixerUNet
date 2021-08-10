@@ -188,7 +188,6 @@ def test(params):
     print('Saving result pngs..')
     if not os.path.exists(save_name):
     # if not os.path.exists(os.path.dirname(save_name)):
-        print("+++++++++++++++")
         try:
             os.mkdir(save_name)
             os.mkdir(save_name + '/raw')
