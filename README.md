@@ -10,6 +10,9 @@ semantic segmentation model "TransUnet" => Refrence for network code.
 
 https://github.com/Beckschen/TransUNet
 
+<img width="621" alt="image" src="https://user-images.githubusercontent.com/55650445/128836392-d7baf20f-edb2-4a88-a16d-c28bed8c8aba.png">
+
+
 # Image Loader
 Kitti dataset consists of images with size of [375, 1242] or [376, 1241]  
 When loading the data, dataloader.py crops the images to [352, 1216] which is dividable by 16.  
