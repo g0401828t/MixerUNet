@@ -180,10 +180,15 @@ def test(params):
     print('Elapesed time: %s' % str(elapsed_time))
     print('Done.')
     
-    save_name = 'result_' + args.model_name
+    save_path = 'results'
+    if not os.path.exists(save_path):
+        os.mkdir(save_path)
+    save_name = save_path + '/result_' + args.model_name
     
     print('Saving result pngs..')
-    if not os.path.exists(os.path.dirname(save_name)):
+    if not os.path.exists(save_name):
+    # if not os.path.exists(os.path.dirname(save_name)):
+        print("+++++++++++++++")
         try:
             os.mkdir(save_name)
             os.mkdir(save_name + '/raw')

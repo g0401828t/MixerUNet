@@ -2,4 +2,4 @@ outputs
 checkpoints
 __pycache__
 models/__pycache__
-result_bts_eigen_v2
+results
