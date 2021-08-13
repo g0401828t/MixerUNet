@@ -51,3 +51,17 @@ after 16 epochs
 ![image](https://user-images.githubusercontent.com/55650445/128855607-de5267a2-7b96-463f-b494-c435362a9b1b.png)
 <2011_09_26_drive_0013_sync_0000000085.png>
 ![image](https://user-images.githubusercontent.com/55650445/128864079-a48d94bc-10e6-4738-8f3b-2be025d8cb4e.png)
+
+## 2nd Trial (pretrained weights without position embeddings)
+after 11 epochs
+|best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
+|------|---|---|---|---|---|---|---|---|---|
+|  |0.91733|0.98775|0.99784|9.64381|2.75907|0.09390|0.12225|0.03917|0.32307|
+
+![image](https://user-images.githubusercontent.com/55650445/129292197-34562b75-4a9a-4ccd-a351-36c0da905476.png)
+
+![image](https://user-images.githubusercontent.com/55650445/129292248-910476de-118d-4a93-844d-286c046da6a9.png)
+
+Interim check  
+![image](https://user-images.githubusercontent.com/55650445/129292919-56a41562-20a3-4296-a97c-05b5fb0495aa.png)  
+Not predicting well on bright & far distance (e.g. sky)
