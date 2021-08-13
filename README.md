@@ -67,7 +67,7 @@ after 11 epochs
 Not predicting well on bright & far distance (e.g. sky)
 
 ## 3rd Trial (ViT -> MLP-Mixer pretrained)
-training...
+training...in progress...
 
 *Limitations*
 1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.
