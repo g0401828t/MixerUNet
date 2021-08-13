@@ -62,6 +62,9 @@ after 11 epochs
 
 ![image](https://user-images.githubusercontent.com/55650445/129292248-910476de-118d-4a93-844d-286c046da6a9.png)
 
-Interim check  
+### Interim check  
 ![image](https://user-images.githubusercontent.com/55650445/129292919-56a41562-20a3-4296-a97c-05b5fb0495aa.png)  
 Not predicting well on bright & far distance (e.g. sky)
+
+## 3rd Trial (ViT -> MLP-Mixer pretrained)
+in progress
