@@ -68,9 +68,11 @@ Not predicting well on bright & far distance (e.g. sky)
 
 ## 3rd Trial (ViT -> MLP-Mixer pretrained)
 training...
+
 *Limitations*
 1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.
 2. Can not random crop the input (352, 1216) to (352, 704) when training.
+
 *Address the Issue by*
 1. Not random cropping the input and train the whole image. => in progress
 2. Random Resize Crop counld be considered but the changing the ratio of the image might affect the training and prediction.
