@@ -72,6 +72,7 @@ parser.add_argument("--variance_focus",            type=float, help="lambda in p
 
 # # Preprocessing
 parser.add_argument("--do_random_rotate",                      help="if set, will perform random rotation for augmentation", action="store_true")
+parser.add_argument("--do_random_crop",                             help="if set, will perform random crop for augmentation", action="store_true")
 parser.add_argument("--degree",                    type=float, help="random rotation maximum degree", default=2.5)
 parser.add_argument("--do_kb_crop",                            help="if set, crop input images as kitti benchmark images", action="store_true")
 parser.add_argument("--use_right",                             help="if set, will randomly use right images when train on KITTI", action="store_true")
@@ -100,40 +101,24 @@ parser.add_argument("--eval_freq",                 type=int,   help="Online eval
 parser.add_argument("--eval_summary_directory",    type=str,   help="output directory for eval summary,"
                                                                     "if empty outputs to checkpoint folder", default="")
 
-# # # TransUnet args
-# parser.add_argument("--root_path", type=str,
-#                     default="../data/Synapse/train_npz", help="root dir for data")
-# parser.add_argument("--dataset", type=str,
-#                     default="Synapse", help="experiment_name")
-# parser.add_argument("--list_dir", type=str,
-#                     default="./lists/lists_Synapse", help="list dir")
+# # # TransUnet/TransUNet args
 parser.add_argument("--num_classes", type=int,
                     default=1, help="output channel of network")
-# parser.add_argument("--max_iterations", type=int,
-#                     default=30000, help="maximum epoch number to train")
 parser.add_argument("--max_epochs", type=int,
                     default=150, help="maximum epoch number to train")
-# parser.add_argument("--batch_size", type=int,
-#                     default=24, help="batch_size per gpu")
 parser.add_argument("--n_gpu", type=int, default=1, help="total gpu")
-# parser.add_argument("--deterministic", type=int,  default=1,
-#                     help="whether use deterministic training")
 parser.add_argument("--base_lr", type=float,  default=0.01,
                     help="segmentation network learning rate")
-# parser.add_argument("--img_size", type=int,
-#                     default=224, help="input patch size of network input")
 parser.add_argument("--img_size_height", type=int,
                     default=352, help="input patch size of network input")
 parser.add_argument("--img_size_width", type=int,
                     default=704, help="input patch size of network input")  # make it the same param with the upper input_*
-# parser.add_argument("--seed", type=int,
-#                     default=1234, help="random seed")
 parser.add_argument("--n_skip", type=int,
                     default=3, help="using number of skip-connect, default is num")
 parser.add_argument("--vit_name", type=str,
                     default="R50-ViT-L_16", help="select one vit model")
-parser.add_argument("--vit_patches_size", type=int,
-                    default=16, help="vit_patches_size, default is 16")
+parser.add_argument("--patches_size", type=int,
+                    default=16, help="patches_size, default is 16")
 
 
 if sys.argv.__len__() == 2:
@@ -395,8 +380,8 @@ def check_kitti_on_model():
     config_vit.n_classes = args.num_classes
     config_vit.n_skip = args.n_skip
     if args.vit_name.find("R50") != -1:
-        # config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
-        config_vit.patches.grid = (int(args.img_size_height / args.vit_patches_size), int(args.img_size_width / args.vit_patches_size))
+        # config_vit.patches.grid = (int(args.img_size / args.patches_size), int(args.img_size / args.patches_size))
+        config_vit.patches.grid = (int(args.img_size_height / args.patches_size), int(args.img_size_width / args.patches_size))
     args.img_size = [args.img_size_height, args.img_size_width]
     
     # dataloader
@@ -455,8 +440,8 @@ def check_kitti_on_model():
 #     config_vit.n_classes = args.num_classes
 #     config_vit.n_skip = args.n_skip
 #     if args.vit_name.find("R50") != -1:
-#         # config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
-#         config_vit.patches.grid = (int(args.img_size_height / args.vit_patches_size), int(args.img_size_width / args.vit_patches_size))
+#         # config_vit.patches.grid = (int(args.img_size / args.patches_size), int(args.img_size / args.patches_size))
+#         config_vit.patches.grid = (int(args.img_size_height / args.patches_size), int(args.img_size_width / args.patches_size))
 #     args.img_size = [args.img_size_height, args.img_size_width]
 
 
@@ -645,12 +630,17 @@ def train(gpu, ngpus_per_node, args):
     config_vit.n_classes = args.num_classes
     config_vit.n_skip = args.n_skip
     if args.vit_name.find("R50") != -1:
-        # config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
-        config_vit.patches.grid = (int(args.img_size_height / args.vit_patches_size), int(args.img_size_width / args.vit_patches_size))
-    args.img_size = [args.img_size_height, args.img_size_width]
+        # config_vit.patches.grid = (int(args.img_size / args.patches_size), int(args.img_size / args.patches_size))
+        config_vit.patches.grid = (int(args.img_size_height / args.patches_size), int(args.img_size_width / args.patches_size))
+    
+    # for MLP Mixer, the input dimenstion of Mixer must be fixed
+    if config_vit.name.find("Mixer") != -1:
+        args.img_size = [352, 1216]
+    else:
+        args.img_size = [args.img_size_height, args.img_size_width]
     # Create model
     model = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)
-    # model.load_from(weights=np.load(config_vit.pretrained_path))
+    model.load_from(weights=np.load(config_vit.pretrained_path))
     model.train()
     # # initialize model
     # model.decoder.apply(weights_init_xavier)
@@ -722,6 +712,9 @@ def train(gpu, ngpus_per_node, args):
 
     cudnn.benchmark = True
 
+    if config_vit.name.find("Mixer") != -1:
+        args.do_random_crop = False
+
     dataloader = BtsDataLoader(args, "train")
     dataloader_eval = BtsDataLoader(args, "online_eval")
 
@@ -770,7 +763,7 @@ def train(gpu, ngpus_per_node, args):
             image = torch.autograd.Variable(sample_batched["image"].cuda(args.gpu, non_blocking=True))
             focal = torch.autograd.Variable(sample_batched["focal"].cuda(args.gpu, non_blocking=True))
             depth_gt = torch.autograd.Variable(sample_batched["depth"].cuda(args.gpu, non_blocking=True))
-
+            
             
             depth_est = model(image, reshape_size = args.img_size)
  
@@ -966,8 +959,8 @@ if __name__ == "__main__":
     # config_vit.n_classes = args.num_classes
     # config_vit.n_skip = args.n_skip
     # if args.vit_name.find("R50") != -1:
-    #     # config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
-    #     config_vit.patches.grid = (int(args.img_size_height / args.vit_patches_size), int(args.img_size_width / args.vit_patches_size))
+    #     # config_vit.patches.grid = (int(args.img_size / args.patches_size), int(args.img_size / args.patches_size))
+    #     config_vit.patches.grid = (int(args.img_size_height / args.patches_size), int(args.img_size_width / args.patches_size))
     # args.img_size = [args.img_size_height, args.img_size_width]
     # model = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
 

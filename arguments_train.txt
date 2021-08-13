@@ -1,3 +1,5 @@
+--model_name TransUnet_Mixer_pretrained
+
 --data_path ../dataset/kitti_dataset/
 --gt_path ../dataset/kitti_dataset/data_depth_annotated/all/
 --filenames_file ./train_test_inputs/eigen_train_files_with_gt.txt
@@ -14,6 +16,7 @@
 --num_epochs 50
 --learning_rate 1e-4
 
+--do_random_crop
 --do_random_rotate
 --degree 1.0
 --do_kb_crop
@@ -38,5 +41,5 @@
 --img_size_height 352
 --img_size_width 704
 --n_skip 3
---vit_name R50-ViT-B_16
---vit_patches_size 16
+--vit_name R50-Mixer-B_16
+--patches_size 16

@@ -1,8 +1,9 @@
+--model_name TransUnet_pretrained_without_positioning
+
 --data_path ../dataset/kitti_dataset/
 --dataset kitti
 --filenames_file ./train_test_inputs/eigen_test_files_with_gt.txt
---model_name bts_eigen_v2
---checkpoint_path ./outputs/bts_eigen_v2/model-451500-best_abs_rel_0.08877
+--checkpoint_path ./outputs/TransUnet_pretrained_without_positioning/model-269000-best_silog_9.64381
 --input_height 352
 --input_width 1216
 --max_depth 80

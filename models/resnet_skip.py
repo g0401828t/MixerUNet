@@ -13,6 +13,17 @@ def np2th(weights, conv=False):
         weights = weights.transpose([3, 2, 0, 1])
     return torch.from_numpy(weights)
 
+# when using windows
+from os.path import join
+from os.path import normpath
+import platform
+def pjoin(path, *paths):
+    p = join(path, *paths)
+    if platform.system() == "Windows":
+        return normpath(p).replace('\\','/')
+    else:
+        return p
+
 class StdConv2d(nn.Conv2d):
 
     def forward(self, x):

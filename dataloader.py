@@ -138,8 +138,9 @@ class DataLoadPreprocess(Dataset):
                 depth_gt = depth_gt / 1000.0
             else:
                 depth_gt = depth_gt / 256.0
-
-            image, depth_gt = self.random_crop(image, depth_gt, self.args.input_height, self.args.input_width)
+            
+            if self.args.do_random_crop:
+                image, depth_gt = self.random_crop(image, depth_gt, self.args.input_height, self.args.input_width)
             image, depth_gt = self.train_preprocess(image, depth_gt)
             sample = {'image': image, 'depth': depth_gt, 'focal': focal}
         
