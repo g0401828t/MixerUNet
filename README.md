@@ -70,10 +70,11 @@ Not predicting well on bright & far distance (e.g. sky)
 training...in progress...
 
 *Limitations*
-1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.
-2. Can not random crop the input (352, 1216) to (352, 704) when training.
-
-*Address the Issue by*
-1. Not random cropping the input and train the whole image. => in progress
-2. Random Resize Crop counld be considered but the changing the ratio of the image might affect the training and prediction.
-3. Thinking...
+1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.  
+    Can not random crop the input (352, 1216) to (352, 704) when training.  
+    a. Not random cropping the input and train the whole image. => in progress  
+    b. Random Resize Crop counld be considered but the changing the ratio of the image might affect the training and prediction.  
+2. Cannot load pretrained weights of MLP-Mixer.  
+    MLP-Mixer pretrained image size is (224, 224) so the input of MLP Block is fixed to (196, 768) which is not the same for the image size (352, 704) or (352, 1216).  
+     a. Train from scratch. => in progress. Not expecting good result.
+     b. Weight initialization
