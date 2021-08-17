@@ -72,7 +72,7 @@ Not predicting well on bright & far distance (e.g. sky)
 after 18 epochs
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
-|  |0.90336|0.97935|0.99501|12.21110|3.33323|0.09647|0.13867|0.04194|0.0.42090|
+|  |0.90336|0.97935|0.99501|12.21110|3.33323|0.09647|0.13867|0.04194|0.42090|
 
 ![image](https://user-images.githubusercontent.com/55650445/129677019-cd1b0121-fbe4-425a-9f01-af64bc262656.png)
 
