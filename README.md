@@ -58,8 +58,10 @@ after 11 epochs
 |------|---|---|---|---|---|---|---|---|---|
 |  |0.91733|0.98775|0.99784|9.64381|2.75907|0.09390|0.12225|0.03917|0.32307|
 
-![image](https://user-images.githubusercontent.com/55650445/129292197-34562b75-4a9a-4ccd-a351-36c0da905476.png)
 
+<2011_09_26_drive_0009_sync_0000000128.png>  
+![image](https://user-images.githubusercontent.com/55650445/129292197-34562b75-4a9a-4ccd-a351-36c0da905476.png)
+<2011_09_26_drive_0013_sync_0000000085.png>  
 ![image](https://user-images.githubusercontent.com/55650445/129292248-910476de-118d-4a93-844d-286c046da6a9.png)
 
 ### Interim check  
@@ -67,7 +69,18 @@ after 11 epochs
 Not predicting well on bright & far distance (e.g. sky)
 
 ## 3rd Trial (ViT -> MLP-Mixer pretrained)
-training...in progress...
+after 18 epochs
+|best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
+|------|---|---|---|---|---|---|---|---|---|
+|  |0.90336|0.97935|0.99501|12.21110|3.33323|0.09647|0.13867|0.04194|0.0.42090|
+
+![image](https://user-images.githubusercontent.com/55650445/129677019-cd1b0121-fbe4-425a-9f01-af64bc262656.png)
+
+
+<2011_09_26_drive_0009_sync_0000000128.png>  
+![image](https://user-images.githubusercontent.com/55650445/129677881-9ae9c3db-6fc0-44f1-bf21-f24028d75351.png)
+<2011_09_26_drive_0013_sync_0000000085.png>  
+![image](https://user-images.githubusercontent.com/55650445/129677957-cb72afd5-315e-4e65-86c7-0680fa606a9d.png)
 
 *Limitations*
 1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.  
@@ -76,5 +89,5 @@ training...in progress...
     b. Random Resize Crop counld be considered but the changing the ratio of the image might affect the training and prediction.  
 2. Cannot load pretrained weights of MLP-Mixer.  
     MLP-Mixer pretrained image size is (224, 224) so the input of MLP Block is fixed to (196, 768) which is not the same for the image size (352, 704) or (352, 1216).  
-     a. Train from scratch. => in progress. Not expecting good result.
-     b. Weight initialization
+     a. Train from scratch. => in progress. Not expecting good result.  
+     b. Weight initialization  
