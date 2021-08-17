@@ -1,4 +1,4 @@
---model_name TransUnet_Mixer_pretrained
+--model_name TransUnet_Mixer
 
 --data_path ../dataset/kitti_dataset/
 --gt_path ../dataset/kitti_dataset/data_depth_annotated/all/
