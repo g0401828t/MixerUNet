@@ -93,3 +93,10 @@ after 18 epochs
     MLP-Mixer pretrained image size is (224, 224) so the input of MLP Block is fixed to (196, 768) which is not the same for the image size (352, 704) or (352, 1216).  
      a. Train from scratch. => in progress. Not expecting good result.  => bad results...(above)
      b. Weight initialization  
+     
+## 4th Trial (token mixing mlp dim: 384 -> 384*8)  
+=> in progress  
+Did not considered the input size.  
+For standard MLP-Mixer, the input size was 224 so the input token size was (224/16)^2 = 196
+However, kitti dataset input size is 352x1216 so the input token size is (352*1216/16^2) = 1672 which is about 8.5 times larger than 384.  
+So the token mixing layer's mlp dimension for Kitti dataset should be 8 times larger (384*8) than the standard token mixing layer's mlp dimension (384).
