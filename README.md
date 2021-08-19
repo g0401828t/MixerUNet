@@ -68,7 +68,9 @@ after 11 epochs
 ![image](https://user-images.githubusercontent.com/55650445/129292919-56a41562-20a3-4296-a97c-05b5fb0495aa.png)  
 Not predicting well on bright & far distance (e.g. sky)
 
-## 3rd Trial (ViT -> MLP-Mixer pretrained)
+## 3rd Trial (ViT -> MLP-Mixer)
+<img width="996" alt="image" src="https://user-images.githubusercontent.com/55650445/130061052-e38b5c1a-229c-4795-9fc8-52f6b1749efe.png">
+
 after 18 epochs
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
@@ -85,9 +87,9 @@ after 18 epochs
 *Limitations*
 1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.  
     Can not random crop the input (352, 1216) to (352, 704) when training.  
-    a. Not random cropping the input and train the whole image. => in progress  
-    b. Random Resize Crop counld be considered but the changing the ratio of the image might affect the training and prediction.  
+    a. Not random cropping the input and train the whole image. => in progress  => bad results...(above)
+    b. Random Resize Crop could be considered but the changing the ratio of the image might affect the training and prediction.  
 2. Cannot load pretrained weights of MLP-Mixer.  
     MLP-Mixer pretrained image size is (224, 224) so the input of MLP Block is fixed to (196, 768) which is not the same for the image size (352, 704) or (352, 1216).  
-     a. Train from scratch. => in progress. Not expecting good result.  
+     a. Train from scratch. => in progress. Not expecting good result.  => bad results...(above)
      b. Weight initialization  
