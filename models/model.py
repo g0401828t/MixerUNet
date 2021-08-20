@@ -293,15 +293,23 @@ class MlpBlock(nn.Module):
     def __init__(self, hidden_dim, ff_dim, vis):
         super(MlpBlock, self).__init__()
         self.vis = vis
-        self.fc0 = nn.Linear(hidden_dim, ff_dim, bias=True)
-        self.fc1 = nn.Linear(ff_dim, hidden_dim, bias=True)
+        self.fc1 = nn.Linear(hidden_dim, ff_dim, bias=True)
+        self.fc2 = nn.Linear(ff_dim, hidden_dim, bias=True)
         self.act_fn = nn.GELU()
 
+        self._init_weights()
+
+    def _init_weights(self):
+        nn.init.xavier_uniform_(self.fc1.weight)
+        nn.init.xavier_uniform_(self.fc2.weight)
+        nn.init.normal_(self.fc1.bias, std=1e-6)
+        nn.init.normal_(self.fc2.bias, std=1e-6)
+
     def forward(self, x):
-        x = self.fc0(x)
+        x = self.fc1(x)
         weights = x if self.vis else None
         x = self.act_fn(x)
-        x = self.fc1(x)
+        x = self.fc2(x)
         return x, weights
 
 # MLP-Mixer Block
@@ -334,22 +342,22 @@ class MixerBlock(nn.Module):
     def load_from(self, weights, n_block):
         ROOT = f"MixerBlock_{n_block}/"
         with torch.no_grad():
-            self.token_mlp_block.fc0.weight.copy_(
-                np2th(weights[pjoin(ROOT, TOK_FC_0, "kernel")]).t())
             self.token_mlp_block.fc1.weight.copy_(
+                np2th(weights[pjoin(ROOT, TOK_FC_0, "kernel")]).t())
+            self.token_mlp_block.fc2.weight.copy_(
                 np2th(weights[pjoin(ROOT, TOK_FC_1, "kernel")]).t())
-            self.token_mlp_block.fc0.bias.copy_(
-                np2th(weights[pjoin(ROOT, TOK_FC_0, "bias")]).t())
             self.token_mlp_block.fc1.bias.copy_(
+                np2th(weights[pjoin(ROOT, TOK_FC_0, "bias")]).t())
+            self.token_mlp_block.fc2.bias.copy_(
                 np2th(weights[pjoin(ROOT, TOK_FC_1, "bias")]).t())
 
-            self.channel_mlp_block.fc0.weight.copy_(
-                np2th(weights[pjoin(ROOT, CHA_FC_0, "kernel")]).t())
             self.channel_mlp_block.fc1.weight.copy_(
+                np2th(weights[pjoin(ROOT, CHA_FC_0, "kernel")]).t())
+            self.channel_mlp_block.fc2.weight.copy_(
                 np2th(weights[pjoin(ROOT, CHA_FC_1, "kernel")]).t())
-            self.channel_mlp_block.fc0.bias.copy_(
-                np2th(weights[pjoin(ROOT, CHA_FC_0, "bias")]).t())
             self.channel_mlp_block.fc1.bias.copy_(
+                np2th(weights[pjoin(ROOT, CHA_FC_0, "bias")]).t())
+            self.channel_mlp_block.fc2.bias.copy_(
                 np2th(weights[pjoin(ROOT, CHA_FC_1, "bias")]).t())
 
             self.pre_norm.weight.copy_(np2th(weights[pjoin(ROOT, PRE_NORM, "scale")]))
@@ -591,21 +599,6 @@ class VisionTransformer(nn.Module):
                         for uname, unit in block.named_children():
                             unit.load_from(res_weight, n_block=bname, n_unit=uname) 
 
-        # # define weight initialization function
-        # # net.apply(init_weights)
-        # def init_weights(self):
-        #     for m in self.modules():
-        #         if isinstance(m, nn.Conv2d):
-        #             nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-        #             if m.bias is not None:
-        #                 nn.init.constant_(m.bias, 0)
-        #         elif isinstance(m, nn.BatchNorm2d):
-        #             nn.init.constant_(m.weight, 1)
-        #             nn.init.constant_(m.bias, 0)
-        #         elif isinstance(m, nn.Linear):
-        #             nn.init.normal_(m.weight, 0, 0.01)
-        #             nn.init.constant_(m.bias, 0)
-
             
 
 CONFIGS = {
@@ -618,6 +611,7 @@ CONFIGS = {
     'R50-ViT-L_16': configs.get_r50_l16_config(),
     'testing': configs.get_testing(),
     'R50-Mixer-B_16': configs.get_r50_mixer_b16_config(),
-    'R50-Mixer-L_16': configs.get_mixer_l16_config()
+    'R50-Mixer-L_16': configs.get_r50_mixer_l16_config(),
+    'R50-Mixer-My_16': configs.get_r50_mixer_my_config(),
 }
 

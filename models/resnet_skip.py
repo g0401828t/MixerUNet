@@ -6,6 +6,7 @@ from collections import OrderedDict
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.nn.modules.normalization import GroupNorm
 
 def np2th(weights, conv=False):
     """Possibly convert HWIO to OIHW."""
@@ -65,6 +66,7 @@ class PreActBottleneck(nn.Module):
             # Projection also with pre-activation according to paper.
             self.downsample = conv1x1(cin, cout, stride, bias=False)
             self.gn_proj = nn.GroupNorm(cout, cout)
+
 
     def forward(self, x):
 

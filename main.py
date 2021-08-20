@@ -613,7 +613,9 @@ def train(gpu, ngpus_per_node, args):
         args.img_size = [args.img_size_height, args.img_size_width]
     # Create model
     model = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)
-    model.load_from(weights=np.load(config_vit.pretrained_path))
+    
+    if config_vit.name.find("ViT") != -1:
+        model.load_from(weights=np.load(config_vit.pretrained_path))
     model.train()
     # # initialize model
     # model.decoder.apply(weights_init_xavier)

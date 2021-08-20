@@ -29,18 +29,6 @@ def get_mixer_b16_config():
     config.tokens_mlp_dim = 384
     config.channels_mlp_dim = 3072
     return config
-
-def get_mixer_l16_config():
-    """Returns Mixer-L/16 configuration."""
-    config = ml_collections.ConfigDict()
-    config.name = 'Mixer-L_16'
-    config.patches = ml_collections.ConfigDict({'size': (16, 16)})
-    config.hidden_size = 1024
-    config.num_blocks = 24
-    config.tokens_mlp_dim = 512
-    config.channels_mlp_dim = 4096
-    return config
-
 def get_r50_mixer_b16_config():
     """Returns the ResNet50 + Mixer-B/16 configuration."""
     config = get_mixer_b16_config()
@@ -60,7 +48,18 @@ def get_r50_mixer_b16_config():
     config.activation = 'softmax'
     return config
 
-def get_r50_l16_config():
+
+def get_mixer_l16_config():
+    """Returns Mixer-L/16 configuration."""
+    config = ml_collections.ConfigDict()
+    config.name = 'Mixer-L_16'
+    config.patches = ml_collections.ConfigDict({'size': (16, 16)})
+    config.hidden_size = 1024
+    config.num_blocks = 24
+    config.tokens_mlp_dim = 512
+    config.channels_mlp_dim = 4096
+    return config
+def get_r50_mixer_l16_config():
     """Returns the Resnet50 + ViT-L/16 configuration. customized """
     config = get_mixer_l16_config()
     config.patches.grid = (16, 16)
@@ -70,7 +69,8 @@ def get_r50_l16_config():
 
     config.dropout_rate = 0.1
     config.classifier = 'seg'
-    config.resnet_pretrained_path = './checkpoints/Mixer-L_16.npz'
+    # config.resnet_pretrained_path = # './checkpoints/'
+    config.pretrained_path = './checkpoints/Mixer-B_16.npz'
     config.decoder_channels = (256, 128, 64, 16)
     config.skip_channels = [512, 256, 64, 16]
     config.n_classes = 1
@@ -78,6 +78,37 @@ def get_r50_l16_config():
     config.activation = 'softmax'
     return config
 
+
+
+def get_mixer_my_config():
+    """Returns Mixer-L/16 configuration."""
+    config = ml_collections.ConfigDict()
+    config.name = 'Mixer-L_16'
+    config.patches = ml_collections.ConfigDict({'size': (16, 16)})
+    config.hidden_size = 768
+    config.num_blocks = 12
+    config.tokens_mlp_dim = 384*8
+    config.channels_mlp_dim = 3072
+    return config
+
+def get_r50_mixer_my_config():
+    """Returns the Resnet50 + ViT-L/16 configuration. customized """
+    config = get_mixer_my_config()
+    config.patches.grid = (16, 16)
+    config.resnet = ml_collections.ConfigDict()
+    config.resnet.num_layers = (3, 4, 9)
+    config.resnet.width_factor = 1
+
+    config.dropout_rate = 0.1
+    config.classifier = 'seg'
+    # config.resnet_pretrained_path = # './checkpoints/'
+    config.pretrained_path = './checkpoints/Mixer-B_16.npz'
+    config.decoder_channels = (256, 128, 64, 16)
+    config.skip_channels = [512, 256, 64, 16]
+    config.n_classes = 1
+    config.n_skip = 3
+    config.activation = 'softmax'
+    return config
 
 
 
