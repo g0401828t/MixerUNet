@@ -339,17 +339,20 @@ class MixerBlock(nn.Module):
     # pretrained n_patch : (224/16) ^ 2
     # kittit n_patch : (352x704) / (16^2)
     # So cannot load pretrained weights
+    ########## updated #########
+    # only token mixing part dim is different
+    # possible to load channel mixing part dim
     def load_from(self, weights, n_block):
         ROOT = f"MixerBlock_{n_block}/"
         with torch.no_grad():
-            self.token_mlp_block.fc1.weight.copy_(
-                np2th(weights[pjoin(ROOT, TOK_FC_0, "kernel")]).t())
-            self.token_mlp_block.fc2.weight.copy_(
-                np2th(weights[pjoin(ROOT, TOK_FC_1, "kernel")]).t())
-            self.token_mlp_block.fc1.bias.copy_(
-                np2th(weights[pjoin(ROOT, TOK_FC_0, "bias")]).t())
-            self.token_mlp_block.fc2.bias.copy_(
-                np2th(weights[pjoin(ROOT, TOK_FC_1, "bias")]).t())
+            # self.token_mlp_block.fc1.weight.copy_(
+            #     np2th(weights[pjoin(ROOT, TOK_FC_0, "kernel")]).t())
+            # self.token_mlp_block.fc2.weight.copy_(
+            #    np2th(weights[pjoin(ROOT, TOK_FC_1, "kernel")]).t())
+            # self.token_mlp_block.fc1.bias.copy_(
+            #     np2th(weights[pjoin(ROOT, TOK_FC_0, "bias")]).t())
+            # self.token_mlp_block.fc2.bias.copy_(
+            #    np2th(weights[pjoin(ROOT, TOK_FC_1, "bias")]).t())
 
             self.channel_mlp_block.fc1.weight.copy_(
                 np2th(weights[pjoin(ROOT, CHA_FC_0, "kernel")]).t())
@@ -598,6 +601,11 @@ class VisionTransformer(nn.Module):
                     for bname, block in self.transformer.embeddings.hybrid_model.body.named_children():
                         for uname, unit in block.named_children():
                             unit.load_from(res_weight, n_block=bname, n_unit=uname) 
+            else:
+                # Encoder whole
+                for bname, block in self.transformer.encoder.named_children():
+                    for uname, unit in block.named_children():
+                        unit.load_from(weights, n_block=uname)
 
             
 

@@ -38,21 +38,21 @@ parser = argparse.ArgumentParser(description="BTS PyTorch implementation.", from
 parser.convert_arg_line_to_args = convert_arg_line_to_args
 
 parser.add_argument("--mode",                      type=str,   help="train or test", default="train")
-parser.add_argument("--model_name",                type=str,   help="model name", default="bts_eigen_v2")
+parser.add_argument("--model_name",                type=str,   help="model name", default="rename_before_training!!")
 # parser.add_argument("--encoder",                   type=str,   help="type of encoder, desenet121_bts, densenet161_bts, "
 #                                                                     "resnet101_bts, resnet50_bts, resnext50_bts or resnext101_bts",
 #                                                                default="densenet161_bts")
 # Dataset
 parser.add_argument("--dataset",                   type=str,   help="dataset to train on, kitti or nyu", default="kitti")
-parser.add_argument("--data_path",                 type=str,   help="path to the data", required=True)
-parser.add_argument("--gt_path",                   type=str,   help="path to the groundtruth data", required=True)
-parser.add_argument("--filenames_file",            type=str,   help="path to the filenames text file", required=True)
-parser.add_argument("--input_height",              type=int,   help="input image height", default=480)
-parser.add_argument("--input_width",               type=int,   help="input image width",  default=640)
-parser.add_argument("--max_depth",                 type=float, help="maximum depth in estimation", default=10)
+parser.add_argument("--data_path",                 type=str,   help="path to the data", default="../dataset/kitti_dataset/")
+parser.add_argument("--gt_path",                   type=str,   help="path to the groundtruth data", default="../dataset/kitti_dataset/data_depth_annotated/all/")
+parser.add_argument("--filenames_file",            type=str,   help="path to the filenames text file", default="./train_test_inputs/eigen_train_files_with_gt.txt")
+parser.add_argument("--input_height",              type=int,   help="input image height", default=352)
+parser.add_argument("--input_width",               type=int,   help="input image width",  default=704)
+parser.add_argument("--max_depth",                 type=float, help="maximum depth in estimation", default=80)
 
 # # Log and save
-parser.add_argument("--log_directory",             type=str,   help="directory to save checkpoints and summaries", default="")
+parser.add_argument("--log_directory",             type=str,   help="directory to save checkpoints and summaries", default="./outputs")
 parser.add_argument("--checkpoint_path",           type=str,   help="path to a checkpoint to load", default="")
 parser.add_argument("--log_freq",                  type=int,   help="Logging frequency in global steps", default=100)
 parser.add_argument("--save_freq",                 type=int,   help="Checkpoint saving frequency in global steps", default=500)
@@ -62,19 +62,19 @@ parser.add_argument("--fix_first_conv_blocks",                 help="if set, wil
 parser.add_argument("--fix_first_conv_block",                  help="if set, will fix the first conv block", action="store_true")
 parser.add_argument("--bn_no_track_stats",                     help="if set, will not track running stats in batch norm layers", action="store_true")
 parser.add_argument("--weight_decay",              type=float, help="weight decay factor for optimization", default=1e-2)
-parser.add_argument("--bts_size",                  type=int,   help="initial num_filters in bts", default=512)
+# parser.add_argument("--bts_size",                  type=int,   help="initial num_filters in bts", default=1)
 parser.add_argument("--retrain",                               help="if used with checkpoint_path, will restart training from step zero", action="store_true")
-parser.add_argument("--adam_eps",                  type=float, help="epsilon in Adam optimizer", default=1e-6)
-parser.add_argument("--batch_size",                type=int,   help="batch size", default=4)
-parser.add_argument("--num_epochs",                type=int,   help="number of epochs", default=50)
-parser.add_argument("--learning_rate",             type=float, help="initial learning rate", default=1e-4)
+parser.add_argument("--adam_eps",                  type=float, help="epsilon in Adam optimizer", default=1e-3)
+parser.add_argument("--batch_size",                type=int,   help="batch size", default=1)
+parser.add_argument("--num_epochs",                type=int,   help="number of epochs", default=30)
+parser.add_argument("--learning_rate",             type=float, help="initial learning rate", default=1e-3)
 parser.add_argument("--end_learning_rate",         type=float, help="end learning rate", default=-1)
 parser.add_argument("--variance_focus",            type=float, help="lambda in paper: [0, 1], higher value more focus on minimizing variance of error", default=0.85)
 
 # # Preprocessing
 parser.add_argument("--do_random_rotate",                      help="if set, will perform random rotation for augmentation", action="store_true")
-parser.add_argument("--do_random_crop",                             help="if set, will perform random crop for augmentation", action="store_true")
-parser.add_argument("--degree",                    type=float, help="random rotation maximum degree", default=2.5)
+parser.add_argument("--do_random_crop",                        help="if set, will perform random crop for augmentation", action="store_true")
+parser.add_argument("--degree",                    type=float, help="random rotation maximum degree", default=1.0)
 parser.add_argument("--do_kb_crop",                            help="if set, crop input images as kitti benchmark images", action="store_true")
 parser.add_argument("--use_right",                             help="if set, will randomly use right images when train on KITTI", action="store_true")
 
@@ -91,25 +91,25 @@ parser.add_argument("--multiprocessing_distributed",           help="Use multi-p
                                                                     "multi node data parallel training", action="store_true",)
 # # Online eval
 parser.add_argument("--do_online_eval",                        help="if set, perform online eval in every eval_freq steps", action="store_true")
-parser.add_argument("--data_path_eval",            type=str,   help="path to the data for online evaluation", required=False)
-parser.add_argument("--gt_path_eval",              type=str,   help="path to the groundtruth data for online evaluation", required=False)
-parser.add_argument("--filenames_file_eval",       type=str,   help="path to the filenames text file for online evaluation", required=False)
+parser.add_argument("--data_path_eval",            type=str,   help="path to the data for online evaluation", default="../dataset/kitti_dataset/")
+parser.add_argument("--gt_path_eval",              type=str,   help="path to the groundtruth data for online evaluation", default="../dataset/kitti_dataset/data_depth_annotated/all/")
+parser.add_argument("--filenames_file_eval",       type=str,   help="path to the filenames text file for online evaluation", default="./train_test_inputs/eigen_test_files_with_gt.txt")
 parser.add_argument("--min_depth_eval",            type=float, help="minimum depth for evaluation", default=1e-3)
 parser.add_argument("--max_depth_eval",            type=float, help="maximum depth for evaluation", default=80)
 parser.add_argument("--eigen_crop",                            help="if set, crops according to Eigen NIPS14", action="store_true")
 parser.add_argument("--garg_crop",                             help="if set, crops according to Garg  ECCV16", action="store_true")
 parser.add_argument("--eval_freq",                 type=int,   help="Online evaluation frequency in global steps", default=500)
 parser.add_argument("--eval_summary_directory",    type=str,   help="output directory for eval summary,"
-                                                                    "if empty outputs to checkpoint folder", default="")
+                                                                    "if empty outputs to checkpoint folder", default="./outputs/eval")
 
 # # # TransUnet/TransUNet args
 parser.add_argument("--num_classes", type=int,
                     default=1, help="output channel of network")
-parser.add_argument("--max_epochs", type=int,
-                    default=150, help="maximum epoch number to train")
-parser.add_argument("--n_gpu", type=int, default=1, help="total gpu")
-parser.add_argument("--base_lr", type=float,  default=0.01,
-                    help="segmentation network learning rate")
+# parser.add_argument("--max_epochs", type=int,
+#                    default=150, help="maximum epoch number to train")
+# parser.add_argument("--n_gpu", type=int, default=1, help="total gpu")
+# parser.add_argument("--base_lr", type=float,  default=0.01,
+#                     help="segmentation network learning rate")
 parser.add_argument("--img_size_height", type=int,
                     default=352, help="input patch size of network input")
 parser.add_argument("--img_size_width", type=int,
@@ -117,7 +117,7 @@ parser.add_argument("--img_size_width", type=int,
 parser.add_argument("--n_skip", type=int,
                     default=3, help="using number of skip-connect, default is num")
 parser.add_argument("--vit_name", type=str,
-                    default="R50-ViT-L_16", help="select one vit model")
+                    default="R50-ViT-B_16", help="select one vit model")
 parser.add_argument("--patches_size", type=int,
                     default=16, help="patches_size, default is 16")
 
@@ -613,9 +613,7 @@ def train(gpu, ngpus_per_node, args):
         args.img_size = [args.img_size_height, args.img_size_width]
     # Create model
     model = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)
-    
-    if config_vit.name.find("ViT") != -1:
-        model.load_from(weights=np.load(config_vit.pretrained_path))
+    # model.load_from(weights=np.load(config_vit.pretrained_path))
     model.train()
     # # initialize model
     # model.decoder.apply(weights_init_xavier)
@@ -652,11 +650,10 @@ def train(gpu, ngpus_per_node, args):
     best_eval_steps = np.zeros(9, dtype=np.int32)
 
     # Training parameters
-    base_lr = args.base_lr
     # optimizer = torch.optim.AdamW([{"params": model.module.encoder.parameters(), "weight_decay": args.weight_decay},
     #                                {"params": model.module.decoder.parameters(), "weight_decay": 0}],
     #                               lr=args.learning_rate, eps=args.adam_eps)
-    optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
+    optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=0.0001)
 
     model_just_loaded = False
     if args.checkpoint_path != "":
@@ -728,6 +725,7 @@ def train(gpu, ngpus_per_node, args):
     epoch = global_step // steps_per_epoch
 
     loss_list, valloss_list = [], []
+    avg_loss = 0
 
     while epoch < args.num_epochs:
         if args.distributed:
@@ -750,6 +748,7 @@ def train(gpu, ngpus_per_node, args):
             # loss_dice = dice_loss(depth_est[mask], depth_gt[mask], softmax=True)
             # loss = 0.5 * loss_ce + 0.5 * loss_dice
             loss = silog_criterion.forward(depth_est, depth_gt, mask.to(torch.bool))
+            avg_loss += loss / args.eval_freq
 
             loss.backward()
             for param_group in optimizer.param_groups:
@@ -808,7 +807,7 @@ def train(gpu, ngpus_per_node, args):
                 time.sleep(0.1)
                 model.eval()
                 eval_measures = online_eval(model, dataloader_eval, gpu, ngpus_per_node)
-                loss_list.append(loss.item())
+                loss_list.append(avg_loss.item())
                 valloss_list.append(eval_measures[:9].tolist())
                 plotgraph(loss_list, valloss_list, path = args.log_directory + "/" + args.model_name, description="")
                 if eval_measures is not None:
@@ -908,7 +907,7 @@ def main():
         # os.system(command)
         # Windows
         shutil.copy2(loaded_model_dir + "/" + loaded_model_filename, model_out_path)
-
+    
     torch.cuda.empty_cache()
     args.distributed = args.world_size > 1 or args.multiprocessing_distributed
 

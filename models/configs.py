@@ -87,7 +87,7 @@ def get_mixer_my_config():
     config.patches = ml_collections.ConfigDict({'size': (16, 16)})
     config.hidden_size = 768
     config.num_blocks = 12
-    config.tokens_mlp_dim = 384*8
+    config.tokens_mlp_dim = 3072  # 384*8
     config.channels_mlp_dim = 3072
     return config
 
