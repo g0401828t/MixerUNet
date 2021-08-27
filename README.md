@@ -101,7 +101,7 @@ For standard MLP-Mixer, the input size was 224 so the input token size was (224/
 However, kitti dataset input size is 352x1216 so the input token size is (352*1216/16^2) = 1672 which is about 8.5 times larger than 384.  
 So the token mixing layer's mlp dimension for Kitti dataset should be 8 times larger (384*8) than the standard token mixing layer's mlp dimension (384).  
 
-after 17 epochs
+after 17 epochs, lr 1e-4 => 1e-3
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
 |  |0.92374|0.98580|0.99702|10.81143|3.01994|0.08174|0.12245|0.03585|0.34027|
