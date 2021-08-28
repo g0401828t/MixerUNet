@@ -66,7 +66,7 @@ after 11 epochs
 ![image](https://user-images.githubusercontent.com/55650445/129292248-910476de-118d-4a93-844d-286c046da6a9.png)
 <2011_09_26_drive_0052_sync_0000000030.png>  
 <img width="1634" alt="image" src="https://user-images.githubusercontent.com/55650445/131207934-3035a3e1-0bff-470a-8f23-d57534ba1977.png">
-<2011_09_26_drive_0017_sync_0000000572.png>  
+<2011_09_26_drive_0117_sync_0000000572.png>  
 <img width="1633" alt="image" src="https://user-images.githubusercontent.com/55650445/131207894-de89f20a-03fe-4a07-a92f-8214ccead00e.png">
 
 ### Interim check  
@@ -98,7 +98,7 @@ after 18 epochs
 <img width="1638" alt="image" src="https://user-images.githubusercontent.com/55650445/131207492-d27028bd-e9b4-42df-8c69-a1b7bd2ae7d2.png">
 <2011_09_26_drive_0052_sync_0000000030.png>  
 <img width="1633" alt="image" src="https://user-images.githubusercontent.com/55650445/131207528-153ee6c5-e040-4f1c-a87e-200566580897.png">
-<2011_09_26_drive_0017_sync_0000000572.png>  
+<2011_09_26_drive_0117_sync_0000000572.png>  
 <img width="1633" alt="image" src="https://user-images.githubusercontent.com/55650445/131207601-099756d9-8b34-4221-a1a3-434506f4ae96.png">
 
 
@@ -125,5 +125,19 @@ after 17 epochs, lr 1e-4 => 1e-3
 <img width="1635" alt="image" src="https://user-images.githubusercontent.com/55650445/131207678-248b7dc7-b4e4-4960-9f6f-10b5604d8e93.png">
 <2011_09_26_drive_0052_sync_0000000030.png>  
 <img width="1630" alt="image" src="https://user-images.githubusercontent.com/55650445/131207792-dff7744a-4825-437a-b0ac-560b822c537d.png">
-<2011_09_26_drive_0017_sync_0000000572.png>  
+<2011_09_26_drive_0117_sync_0000000572.png>  
 <img width="1634" alt="image" src="https://user-images.githubusercontent.com/55650445/131207838-f4220015-64aa-47cf-8020-81b3b01c80f8.png">
+
+# Results
+
+|RGB|TransUNet|TransUNet_pretrained|MixerUNet|MixerUNet_pretrained|
+|---|---|---|---|---|
+|<img width="1071" alt="image" src="https://user-images.githubusercontent.com/55650445/131208458-6f9b5fe9-4b5b-4031-b7fb-f91a12624cd5.png">|<img width="1065" alt="image" src="https://user-images.githubusercontent.com/55650445/131208451-68e7d1a2-ce8d-4043-abcc-b4886d3ea738.png">|<img width="1064" alt="image" src="https://user-images.githubusercontent.com/55650445/131208661-86de449b-34a9-44e9-bc01-64d4f029c9d1.png">|<img width="1066" alt="image" src="https://user-images.githubusercontent.com/55650445/131208666-feaba234-ce8d-4b1b-b65f-a0200e2011aa.png">|<img width="1063" alt="image" src="https://user-images.githubusercontent.com/55650445/131208680-7505ad47-1cd5-409c-a3a5-86a4b15b8de8.png">|
+|<img width="1069" alt="image" src="https://user-images.githubusercontent.com/55650445/131208527-8e63564d-1b54-49c4-892d-a9595b9d3cec.png">|<img width="1068" alt="image" src="https://user-images.githubusercontent.com/55650445/131208538-8b9dafe4-c1d1-4fc3-b6bf-a6a6a42d40ca.png">|<img width="1063" alt="image" src="https://user-images.githubusercontent.com/55650445/131208611-19b5896e-fa93-4579-a8bb-24383ba39e0c.png">|<img width="1067" alt="image" src="https://user-images.githubusercontent.com/55650445/131208623-9ec04ec0-bf44-4c35-b72e-e82c00af2216.png">|<img width="1068" alt="image" src="https://user-images.githubusercontent.com/55650445/131208635-7f4dfc09-dee0-4063-b00a-9b582322a8e2.png">|
+|<img width="1068" alt="image" src="https://user-images.githubusercontent.com/55650445/131208729-6202496c-a638-4d2e-ae89-124484de7f53.png">|<img width="1069" alt="image" src="https://user-images.githubusercontent.com/55650445/131208783-5634716d-7c6b-4995-8b63-612c3150af44.png">|<img width="1060" alt="image" src="https://user-images.githubusercontent.com/55650445/131208792-d87aa1c9-fd6f-48eb-915b-bd6a7239ca86.png">|<img width="1059" alt="image" src="https://user-images.githubusercontent.com/55650445/131208804-0c8db7f6-f4a1-4b02-b609-9825e2fdd474.png">|<img width="1065" alt="image" src="https://user-images.githubusercontent.com/55650445/131208820-79f02dd0-33fd-483d-81ae-f8912caeb0d1.png">|
+|<img width="1073" alt="image" src="https://user-images.githubusercontent.com/55650445/131208897-bb3f7ba0-a0b1-4144-a33e-7c65938e4dc2.png">|<img width="1065" alt="image" src="https://user-images.githubusercontent.com/55650445/131208901-ef13b61a-c875-4299-812a-3372268f5106.png">|<img width="1063" alt="image" src="https://user-images.githubusercontent.com/55650445/131208914-a8c51316-bddb-493b-af77-5c5120b690b4.png">|<img width="1064" alt="image" src="https://user-images.githubusercontent.com/55650445/131208926-4cf9b480-9e12-4e47-b9ed-882b9d5f8502.png">|<img width="1065" alt="image" src="https://user-images.githubusercontent.com/55650445/131208942-a53a3814-df2e-4fd7-849c-a3a764a77079.png">|
+
+MLP-Mixer's biggest limitation is fixed input dim which cause training and testing image size  to be the same. This is crucial because being not available to train with random cropped image will limit the model's performance.
+Curious whether Random Crop and Resizing it back to the same size of the original input will affect the model's performance and how will it affect it.
+Despite the limitation of mlp_mixer, we can see that the performance mlp_mixer gives us is quite good compared to ViT.
+Need to compare the speed and parameter numbers between them.
