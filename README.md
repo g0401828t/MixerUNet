@@ -64,12 +64,14 @@ after 11 epochs
 ![image](https://user-images.githubusercontent.com/55650445/129292197-34562b75-4a9a-4ccd-a351-36c0da905476.png)
 <2011_09_26_drive_0013_sync_0000000085.png>  
 ![image](https://user-images.githubusercontent.com/55650445/129292248-910476de-118d-4a93-844d-286c046da6a9.png)
+<2011_09_26_drive_0052_sync_0000000030.png>  
+<img width="1634" alt="image" src="https://user-images.githubusercontent.com/55650445/131207934-3035a3e1-0bff-470a-8f23-d57534ba1977.png">
 <2011_09_26_drive_0017_sync_0000000572.png>  
 <img width="1633" alt="image" src="https://user-images.githubusercontent.com/55650445/131207894-de89f20a-03fe-4a07-a92f-8214ccead00e.png">
 
 ### Interim check  
 ![image](https://user-images.githubusercontent.com/55650445/129292919-56a41562-20a3-4296-a97c-05b5fb0495aa.png)  
-Not predicting well on bright & far distance (e.g. sky)
+Not predicting well on bright & far distance (e.g. sky, high contrast pixels)
 
 ## 3rd Trial (ViT -> MLP-Mixer)  
 *Limitations*
