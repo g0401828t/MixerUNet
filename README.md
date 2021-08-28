@@ -45,7 +45,7 @@ to not load position embeddings weight or any other missing weights.
 after 16 epochs
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
-|  |0.90746|0.98142|0.99575|12.19566|3.19173|0.08877|0.13404|0.03874|0.39217|
+|TransUNet  |0.90746|0.98142|0.99575|12.19566|3.19173|0.08877|0.13404|0.03874|0.39217|
 
 <2011_09_26_drive_0009_sync_0000000128.png>
 ![image](https://user-images.githubusercontent.com/55650445/128855607-de5267a2-7b96-463f-b494-c435362a9b1b.png)
@@ -56,45 +56,53 @@ after 16 epochs
 after 11 epochs
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
-|  |0.91733|0.98775|0.99784|9.64381|2.75907|0.09390|0.12225|0.03917|0.32307|
+|TransUNet  |0.90746|0.98142|0.99575|12.19566|3.19173|0.08877|0.13404|0.03874|0.39217|
+|TransUNet_Pre  |0.91733|0.98775|0.99784|9.64381|2.75907|0.09390|0.12225|0.03917|0.32307|
 
 
 <2011_09_26_drive_0009_sync_0000000128.png>  
 ![image](https://user-images.githubusercontent.com/55650445/129292197-34562b75-4a9a-4ccd-a351-36c0da905476.png)
 <2011_09_26_drive_0013_sync_0000000085.png>  
 ![image](https://user-images.githubusercontent.com/55650445/129292248-910476de-118d-4a93-844d-286c046da6a9.png)
+<2011_09_26_drive_0017_sync_0000000572.png>  
+<img width="1633" alt="image" src="https://user-images.githubusercontent.com/55650445/131207894-de89f20a-03fe-4a07-a92f-8214ccead00e.png">
 
 ### Interim check  
 ![image](https://user-images.githubusercontent.com/55650445/129292919-56a41562-20a3-4296-a97c-05b5fb0495aa.png)  
 Not predicting well on bright & far distance (e.g. sky)
 
-## 3rd Trial (ViT -> MLP-Mixer)
-<img width="996" alt="image" src="https://user-images.githubusercontent.com/55650445/130061052-e38b5c1a-229c-4795-9fc8-52f6b1749efe.png">
+## 3rd Trial (ViT -> MLP-Mixer)  
+*Limitations*
+1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.  
+    Can not random crop the input (352, 1216) to (352, 704) when training.  
+    a. Not random cropping the input and train the whole image. => Used method.
+    b. Random Resize Crop could be considered but the changing the ratio of the image might affect the training and prediction.  
+2. Cannot load pretrained weights of MLP-Mixer.  
+    MLP-Mixer pretrained image size is (224, 224) so the input of MLP Block is fixed to (196, 768) which is not the same for the image size (352, 704) or (352, 1216).  
+     a. Train from scratch. 
+     b. Weight initialization.
+     c. Pretrained Channel Mixing weights and initialized Token Mixing weights. => Used method.
 
 after 18 epochs
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
-|  |0.90336|0.97935|0.99501|12.21110|3.33323|0.09647|0.13867|0.04194|0.42090|
-
-![image](https://user-images.githubusercontent.com/55650445/129677019-cd1b0121-fbe4-425a-9f01-af64bc262656.png)
-
+|TransUNet  |0.90746|0.98142|0.99575|12.19566|3.19173|0.08877|0.13404|0.03874|0.39217|
+|TransUNet_Pre  |0.91733|0.98775|0.99784|9.64381|2.75907|0.09390|0.12225|0.03917|0.32307|
+|MixerUNet  |0.90336|0.97935|0.99501|12.21110|3.33323|0.09647|0.13867|0.04194|0.42090| 
 
 <2011_09_26_drive_0009_sync_0000000128.png>  
-![image](https://user-images.githubusercontent.com/55650445/129677881-9ae9c3db-6fc0-44f1-bf21-f24028d75351.png)
+<img width="1641" alt="image" src="https://user-images.githubusercontent.com/55650445/131207478-1192603e-f6ab-43eb-90fd-437ca08f9742.png">  
 <2011_09_26_drive_0013_sync_0000000085.png>  
-![image](https://user-images.githubusercontent.com/55650445/129677957-cb72afd5-315e-4e65-86c7-0680fa606a9d.png)
+<img width="1638" alt="image" src="https://user-images.githubusercontent.com/55650445/131207492-d27028bd-e9b4-42df-8c69-a1b7bd2ae7d2.png">
+<2011_09_26_drive_0052_sync_0000000030.png>  
+<img width="1633" alt="image" src="https://user-images.githubusercontent.com/55650445/131207528-153ee6c5-e040-4f1c-a87e-200566580897.png">
+<2011_09_26_drive_0017_sync_0000000572.png>  
+<img width="1633" alt="image" src="https://user-images.githubusercontent.com/55650445/131207601-099756d9-8b34-4221-a1a3-434506f4ae96.png">
 
-*Limitations*
-1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.  
-    Can not random crop the input (352, 1216) to (352, 704) when training.  
-    a. Not random cropping the input and train the whole image. => in progress  => bad results...(above)
-    b. Random Resize Crop could be considered but the changing the ratio of the image might affect the training and prediction.  
-2. Cannot load pretrained weights of MLP-Mixer.  
-    MLP-Mixer pretrained image size is (224, 224) so the input of MLP Block is fixed to (196, 768) which is not the same for the image size (352, 704) or (352, 1216).  
-     a. Train from scratch. => in progress. Not expecting good result.  => bad results...(above)
-     b. Weight initialization  
+
+
      
-## 4th Trial (token mixing mlp dim: 384 -> 384*8)  => in progress  
+## 4th Trial (token mixing mlp dim: 384 -> 384*8)
 params: 200107121
 Did not considered the input size.  
 For standard MLP-Mixer, the input size was 224 so the input token size was (224/16)^2 = 196
@@ -104,4 +112,15 @@ So the token mixing layer's mlp dimension for Kitti dataset should be 8 times la
 after 17 epochs, lr 1e-4 => 1e-3
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
-|  |0.92374|0.98580|0.99702|10.81143|3.01994|0.08174|0.12245|0.03585|0.34027|
+|TransUNet  |0.90746|0.98142|0.99575|12.19566|3.19173|0.08877|0.13404|0.03874|0.39217|
+|TransUNet_Pre  |0.91733|0.98775|0.99784|9.64381|2.75907|0.09390|0.12225|0.03917|0.32307|
+|MixerUNet  |0.90336|0.97935|0.99501|12.21110|3.33323|0.09647|0.13867|0.04194|0.42090|  
+|MixerUNet_Pre  |0.92374|0.9858|0.99702|10.81143|3.01994|0.08174|0.12245|0.03585|0.34027|  
+<2011_09_26_drive_0009_sync_0000000128.png>  
+<img width="1634" alt="image" src="https://user-images.githubusercontent.com/55650445/131207661-98793f44-1866-425d-aac2-1c053004274c.png">
+<2011_09_26_drive_0013_sync_0000000085.png>  
+<img width="1635" alt="image" src="https://user-images.githubusercontent.com/55650445/131207678-248b7dc7-b4e4-4960-9f6f-10b5604d8e93.png">
+<2011_09_26_drive_0052_sync_0000000030.png>  
+<img width="1630" alt="image" src="https://user-images.githubusercontent.com/55650445/131207792-dff7744a-4825-437a-b0ac-560b822c537d.png">
+<2011_09_26_drive_0017_sync_0000000572.png>  
+<img width="1634" alt="image" src="https://user-images.githubusercontent.com/55650445/131207838-f4220015-64aa-47cf-8020-81b3b01c80f8.png">
