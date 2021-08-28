@@ -1,6 +1,6 @@
---model_name TransUnet_Mixer_changed_token_dim
+--model_name TransUnet_Mixer_changed_token_dim_pretrained
 
---num_epochs 30
+--num_epochs 11
 
 --do_random_rotate
 --do_kb_crop

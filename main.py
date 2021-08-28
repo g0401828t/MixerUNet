@@ -613,7 +613,7 @@ def train(gpu, ngpus_per_node, args):
         args.img_size = [args.img_size_height, args.img_size_width]
     # Create model
     model = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)
-    # model.load_from(weights=np.load(config_vit.pretrained_path))
+    model.load_from(weights=np.load(config_vit.pretrained_path))
     model.train()
     # # initialize model
     # model.decoder.apply(weights_init_xavier)
@@ -808,6 +808,7 @@ def train(gpu, ngpus_per_node, args):
                 model.eval()
                 eval_measures = online_eval(model, dataloader_eval, gpu, ngpus_per_node)
                 loss_list.append(avg_loss.item())
+                avg_loss = 0
                 valloss_list.append(eval_measures[:9].tolist())
                 plotgraph(loss_list, valloss_list, path = args.log_directory + "/" + args.model_name, description="")
                 if eval_measures is not None:
