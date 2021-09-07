@@ -4,34 +4,77 @@ Using TransUnet for depth estimation with kitti dataset
 > Code is quite messy, will update ASAP
 
 ## Reference
-depth estimation model "BTS" => Refrence for dataloading and training, testing code.
+depth estimation model "[BTS](https://github.com/cogaplex-bts/bts)" => Refrence for dataloading and training, testing code.
 
-https://github.com/g0401828t/TransUnet_depthEstimation/new/main?readme=1
+semantic segmentation model "[TransUnet](https://github.com/Beckschen/TransUNet)" => Refrence for network code.
 
-semantic segmentation model "TransUnet" => Refrence for network code.
-
-https://github.com/Beckschen/TransUNet
 
 <img width="1242" alt="image" src="https://user-images.githubusercontent.com/55650445/128837226-80bc8950-da15-4ac2-945e-50009cf0da49.png">
 
-## Implementation
+
+
+
+## Preparation
+### 1. Available pre-trained ViT models and MLP-Mixer models
+- [Get ViT models](https://console.cloud.google.com/storage/browser/vit_models;tab=objects?prefix=&forceOnObjectsSortingFiltering=false)
+- [Get MLP-Mixer models](https://console.cloud.google.com/storage/browser/mixer_models;tab=objects?prefix=&forceOnObjectsSortingFiltering=false)
+### 2. Prepare KITTI dataset and Project folder
+~~~
+.  
+├── dataset  
+│     └── kitti_dataset  
+│            ├── 2011_09_26  
+│            ├── ...  
+│            ├── 2011_10_03  
+│            └── data_depth_annotated  
+│                   ├── 2011_09_26_drive_0001_sync  
+│                   └── ...  
+└── TransUNet_depth  
+     ├── checkpoints  
+     ├── models 
+     ├── outputs  
+     ├── results  
+     └── train_test_inputs 
+      
+~~~
+
+### 3. Training
+- For training TransUNet  
+~~~
+python main.py arguments_train_TransUNet.py
+~~~
+- For trainig MixerUNet  
+~~~
+python main.py arguments_train_MixerUNet.py
+~~~
+### 4. Testing and saving results
+- For Testing TransUNet  
+~~~
+python main.py arguments_test_TransUNet.py
+~~~
+- For Testing MixerUNet  
+~~~
+python main.py arguments_test_MixerUNet.py
+~~~
+
+
+## Implementation Details
 <img width="1101" alt="image" src="https://user-images.githubusercontent.com/55650445/128836980-5f419cd3-d213-406b-9a2c-6dd7efe52732.png">
 
 ### Image Loader
 Kitti dataset consists of images with size of [375, 1242] or [376, 1241]  
 When loading the data, dataloader.py crops the images to [352, 1216] which is dividable by 16.  
-TransUNet code only takes inputs with same width and height. However, Kitti dataset has different sizes of width and height.  
+TransUNet code only takes inputs with same width and height[224, 224]. However, Kitti dataset has different sizes of width and height.  
 So I modified the TransUNet code to take inputs with different sized width and height.  
-Only modifying the Encoder part was necessary.  
+Done by modifying the Encoder part.  
 ### Training (without position embeddings)
-When training, images are random croped to [352, 704].  
+When training, images are random cropped to [352, 704].  
 The TransUnet's reshape part between Encoder and Decoder relys on the input image size so I modified the code for this issue.  
-Modified the calss DecoderCup() in model.py
+Modified the class DecoderCup() in model.py
 ### Online Eval
 When evaluation, images are not random croped. So the input size is [352, 1216].  
 Due to this, the dimenstion for reshaping in between encoder and decoder was an issue.  
-I modified the code by taking the input image size as input for DecoderCup() evertime to address the issue.  
-I think this is a little bit awkward. Need to think about this method again because it can cause an ill-training of the network.
+I modified the class DecoderCup() def forward() in model.py by adding reshape_size parameter to reshape the input of decoder with respect to the input image shape.   
 ### Testing and saving the output image(depth_estimated).
 Because trained without position embeddings,
 when loading state_dict => model.load_state_dict(checkpoint['model'], strict=False)
@@ -42,7 +85,7 @@ to not load position embeddings weight or any other missing weights.
 
 
 ## 1st Trial (without pretraining and position enmbeddings)
-after 16 epochs
+after 16 epochs  
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
 |TransUNet  |0.90746|0.98142|0.99575|12.19566|3.19173|0.08877|0.13404|0.03874|0.39217|
@@ -53,7 +96,7 @@ after 16 epochs
 ![image](https://user-images.githubusercontent.com/55650445/128864079-a48d94bc-10e6-4738-8f3b-2be025d8cb4e.png)
 
 ## 2nd Trial (pretrained weights without position embeddings)
-after 11 epochs
+after 11 epochs  
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
 |TransUNet  |0.90746|0.98142|0.99575|12.19566|3.19173|0.08877|0.13404|0.03874|0.39217|
@@ -74,15 +117,15 @@ after 11 epochs
 Not predicting well on bright & far distance (e.g. sky, high contrast pixels)
 
 ## 3rd Trial (ViT -> MLP-Mixer)  
-*Limitations*
+*Limitations*  
 1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.  
     Can not random crop the input (352, 1216) to (352, 704) when training.  
-    a. Not random cropping the input and train the whole image. => Used method.
+    a. Not random cropping the input and train the whole image. => Used method.  
     b. Random Resize Crop could be considered but the changing the ratio of the image might affect the training and prediction.  
 2. Cannot load pretrained weights of MLP-Mixer.  
     MLP-Mixer pretrained image size is (224, 224) so the input of MLP Block is fixed to (196, 768) which is not the same for the image size (352, 704) or (352, 1216).  
-     a. Train from scratch. 
-     b. Weight initialization.
+     a. Train from scratch.  
+     b. Weight initialization.  
      c. Pretrained Channel Mixing weights and initialized Token Mixing weights. => Used method.
 
 after 18 epochs
@@ -105,9 +148,8 @@ after 18 epochs
 
      
 ## 4th Trial (token mixing mlp dim: 384 -> 384*8)
-params: 200107121
 Did not considered the input size.  
-For standard MLP-Mixer, the input size was 224 so the input token size was (224/16)^2 = 196
+For standard MLP-Mixer, the input size was 224 so the input token size was (224/16)^2 = 196  
 However, kitti dataset input size is 352x1216 so the input token size is (352*1216/16^2) = 1672 which is about 8.5 times larger than 384.  
 So the token mixing layer's mlp dimension for Kitti dataset should be 8 times larger (384*8) than the standard token mixing layer's mlp dimension (384).  
 
@@ -137,7 +179,13 @@ after 17 epochs, lr 1e-4 => 1e-3
 |<img width="1068" alt="image" src="https://user-images.githubusercontent.com/55650445/131208729-6202496c-a638-4d2e-ae89-124484de7f53.png">|<img width="1069" alt="image" src="https://user-images.githubusercontent.com/55650445/131208783-5634716d-7c6b-4995-8b63-612c3150af44.png">|<img width="1060" alt="image" src="https://user-images.githubusercontent.com/55650445/131208792-d87aa1c9-fd6f-48eb-915b-bd6a7239ca86.png">|<img width="1059" alt="image" src="https://user-images.githubusercontent.com/55650445/131208804-0c8db7f6-f4a1-4b02-b609-9825e2fdd474.png">|<img width="1065" alt="image" src="https://user-images.githubusercontent.com/55650445/131208820-79f02dd0-33fd-483d-81ae-f8912caeb0d1.png">|
 |<img width="1073" alt="image" src="https://user-images.githubusercontent.com/55650445/131208897-bb3f7ba0-a0b1-4144-a33e-7c65938e4dc2.png">|<img width="1065" alt="image" src="https://user-images.githubusercontent.com/55650445/131208901-ef13b61a-c875-4299-812a-3372268f5106.png">|<img width="1063" alt="image" src="https://user-images.githubusercontent.com/55650445/131208914-a8c51316-bddb-493b-af77-5c5120b690b4.png">|<img width="1064" alt="image" src="https://user-images.githubusercontent.com/55650445/131208926-4cf9b480-9e12-4e47-b9ed-882b9d5f8502.png">|<img width="1065" alt="image" src="https://user-images.githubusercontent.com/55650445/131208942-a53a3814-df2e-4fd7-849c-a3a764a77079.png">|
 
+
+|best|testing_time(sec)|parameters|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
+|------|----|----|---|---|---|---|---|---|---|---|---|
+|TransUNet_Pre  |126.24|  105M|0.91733|0.98775|0.99784|9.64381|2.75907|0.09390|0.12225|0.03917|0.32307|
+|MixerUNet_Pre  | 93.67|  200M|0.92374|0.9858|0.99702|10.81143|3.01994|0.08174|0.12245|0.03585|0.34027| 
+
 - MLP-Mixer's biggest limitation is fixed input dim which cause training and testing image size  to be the same. This is crucial because being not available to train with random cropped image will limit the model's performance.
-- Curious whether Random Crop and Resizing it back to the same size of the original input will affect the model's performance and how will it affect it.
-- Despite the limitation of mlp_mixer, we can see that the performance mlp_mixer gives us is quite good compared to ViT.
-- Need to compare the speed and parameter numbers between them.
+    - Curious whether Random Crop and Resizing it back to the same size of the original input will affect the model's performance and how will it affect it.
+- Despite the limitation of MLP-Mixer, we can see that the performance mlp_mixer gives us is quite good compared to ViT.
+- Also, although MixerUNet(MLP-Mixer) has more parameters, the testing time is less than TransUNet(ViT)
