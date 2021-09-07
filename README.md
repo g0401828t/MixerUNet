@@ -1,5 +1,5 @@
 # MixerUNet from TransUNet (Monocular Depth Estimation)
-Using TransUnet and MixerUNet (modified) for depth estimation with kitti dataset and comparing ViT (TransUNet) with MLP-Mixer (MixerUNet) by their performances.
+Using TransUnet and MixerUNet (modified) for depth estimation with kitti dataset and comparing ViT (TransUNet) with MLP-Mixer (MixerUNet) by their performance.
 
 
 ## Reference
