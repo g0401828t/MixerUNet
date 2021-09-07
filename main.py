@@ -101,18 +101,10 @@ parser.add_argument("--eval_summary_directory",    type=str,   help="output dire
                                                                     "if empty outputs to checkpoint folder", default="./outputs/eval")
 
 # # # TransUnet/TransUNet args
-parser.add_argument("--num_classes", type=int,
-                    default=1, help="output channel of network")
-# parser.add_argument("--img_size_height", type=int,
-#                     default=352, help="input patch size of network input")
-# parser.add_argument("--img_size_width", type=int,
-#                     default=1216, help="input patch size of network input")  # make it the same param with the upper input_*
-parser.add_argument("--n_skip", type=int,
-                    default=3, help="using number of skip-connect, default is num")
-parser.add_argument("--vit_name", type=str,
-                    default="R50-ViT-B_16", help="select one vit model")
-parser.add_argument("--patches_size", type=int,
-                    default=16, help="patches_size, default is 16")
+parser.add_argument("--num_classes",                type=int,  help="output channel of network", default=1)
+parser.add_argument("--n_skip",                     type=int,  help="using number of skip-connect, default is num",  default=3)
+parser.add_argument("--vit_name",                   type=str,  help="select one vit model", default="R50-ViT-B_16",)
+parser.add_argument("--patches_size",               type=int,  help="patches_size, default is 16", default=16)
 
 
 if sys.argv.__len__() == 2:
