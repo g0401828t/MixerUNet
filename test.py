@@ -133,7 +133,6 @@ def test(params):
     config_vit.n_classes = args.num_classes
     config_vit.n_skip = args.n_skip
     if args.vit_name.find("R50") != -1:
-        # config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
         config_vit.patches.grid = (int(args.img_size_height / args.vit_patches_size), int(args.img_size_width / args.vit_patches_size))
     args.img_size = [args.img_size_height, args.img_size_width]
     # Create model
@@ -179,6 +178,7 @@ def test(params):
     elapsed_time = time.time() - start_time
     print('Elapesed time: %s' % str(elapsed_time))
     print('Done.')
+    
     
     save_path = 'results'
     if not os.path.exists(save_path):

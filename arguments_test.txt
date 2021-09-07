@@ -1,9 +1,7 @@
---model_name TransUnet_Mixer_changed_token_dim_1
---checkpoint_path ./outputs/TransUnet_Mixer_changed_token_dim_1/model-392500-best_rms_3.01994
---vit_name R50-Mixer-My_16
+--model_name TransUNet
+--checkpoint_path ./outputs/TransUnet/
+--vit_name R50-ViT-B_16
 
 
---max_depth 80
 --do_kb_crop
 --save_lpg
-

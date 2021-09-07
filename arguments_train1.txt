@@ -1,0 +1,9 @@
+--model_name MixerUNet
+--vit_name R50-Mixer-My_16
+
+--do_random_crop False
+--do_kb_crop
+--do_online_eval
+--garg_crop
+
+--eval_freq 5

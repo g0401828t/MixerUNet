@@ -191,7 +191,7 @@ class Embeddings(nn.Module):
         self.config = config
 #         img_size = _pair(img_size)
         
-        if config.patches.get("grid") is not None:   # ResNet
+        if config.patches.get("grid") is not None:   # ResNet for making 1x1 conv
             grid_size = config.patches["grid"] 
             patch_size = (img_size[0] // 16 // grid_size[0], img_size[1] // 16 // grid_size[1])
             patch_size_real = (patch_size[0] * 16, patch_size[1] * 16)
@@ -208,7 +208,7 @@ class Embeddings(nn.Module):
         self.patch_embeddings = nn.Conv2d(in_channels=in_channels,
                                        out_channels=config.hidden_size,
                                        kernel_size=patch_size,
-                                       stride=patch_size)
+                                       stride=patch_size)               # <== if ResNet Embeddings, patch_size = 1
         # self.position_embeddings = nn.Parameter(torch.zeros(1, config.n_patches, config.hidden_size))
 
         self.dropout = nn.Dropout(config.dropout_rate)
@@ -513,7 +513,6 @@ class DecoderCup(nn.Module):
         
         reshape_size_height = reshape_size[0]
         reshape_size_width = reshape_size[1]
-#         h, w = int(np.sqrt(n_patch)), int(np.sqrt(n_patch))
         h, w = int(reshape_size_height / 16),  int(reshape_size_width / 16)  # (n_patch, D) -> (D, H/16, W/16)
         x = hidden_states.permute(0, 2, 1)
         x = x.contiguous().view(B, hidden, h, w)

@@ -39,16 +39,13 @@ parser.convert_arg_line_to_args = convert_arg_line_to_args
 
 parser.add_argument("--mode",                      type=str,   help="train or test", default="train")
 parser.add_argument("--model_name",                type=str,   help="model name", default="rename_before_training!!")
-# parser.add_argument("--encoder",                   type=str,   help="type of encoder, desenet121_bts, densenet161_bts, "
-#                                                                     "resnet101_bts, resnet50_bts, resnext50_bts or resnext101_bts",
-#                                                                default="densenet161_bts")
 # Dataset
 parser.add_argument("--dataset",                   type=str,   help="dataset to train on, kitti or nyu", default="kitti")
 parser.add_argument("--data_path",                 type=str,   help="path to the data", default="../dataset/kitti_dataset/")
 parser.add_argument("--gt_path",                   type=str,   help="path to the groundtruth data", default="../dataset/kitti_dataset/data_depth_annotated/all/")
 parser.add_argument("--filenames_file",            type=str,   help="path to the filenames text file", default="./train_test_inputs/eigen_train_files_with_gt.txt")
 parser.add_argument("--input_height",              type=int,   help="input image height", default=352)
-parser.add_argument("--input_width",               type=int,   help="input image width",  default=704)
+parser.add_argument("--input_width",               type=int,   help="input image width",  default=1216)
 parser.add_argument("--max_depth",                 type=float, help="maximum depth in estimation", default=80)
 
 # # Log and save
@@ -62,7 +59,6 @@ parser.add_argument("--fix_first_conv_blocks",                 help="if set, wil
 parser.add_argument("--fix_first_conv_block",                  help="if set, will fix the first conv block", action="store_true")
 parser.add_argument("--bn_no_track_stats",                     help="if set, will not track running stats in batch norm layers", action="store_true")
 parser.add_argument("--weight_decay",              type=float, help="weight decay factor for optimization", default=1e-2)
-# parser.add_argument("--bts_size",                  type=int,   help="initial num_filters in bts", default=1)
 parser.add_argument("--retrain",                               help="if used with checkpoint_path, will restart training from step zero", action="store_true")
 parser.add_argument("--adam_eps",                  type=float, help="epsilon in Adam optimizer", default=1e-3)
 parser.add_argument("--batch_size",                type=int,   help="batch size", default=1)
@@ -73,7 +69,9 @@ parser.add_argument("--variance_focus",            type=float, help="lambda in p
 
 # # Preprocessing
 parser.add_argument("--do_random_rotate",                      help="if set, will perform random rotation for augmentation", action="store_true")
-parser.add_argument("--do_random_crop",                        help="if set, will perform random crop for augmentation", action="store_true")
+parser.add_argument("--do_random_crop",                        help="if set, will perform random crop for augmentation", required=True)
+parser.add_argument("--rcrop_height",              type=int,   help="input image height", default=352)
+parser.add_argument("--rcrop_width",               type=int,   help="input image width",  default=704)
 parser.add_argument("--degree",                    type=float, help="random rotation maximum degree", default=1.0)
 parser.add_argument("--do_kb_crop",                            help="if set, crop input images as kitti benchmark images", action="store_true")
 parser.add_argument("--use_right",                             help="if set, will randomly use right images when train on KITTI", action="store_true")
@@ -105,15 +103,10 @@ parser.add_argument("--eval_summary_directory",    type=str,   help="output dire
 # # # TransUnet/TransUNet args
 parser.add_argument("--num_classes", type=int,
                     default=1, help="output channel of network")
-# parser.add_argument("--max_epochs", type=int,
-#                    default=150, help="maximum epoch number to train")
-# parser.add_argument("--n_gpu", type=int, default=1, help="total gpu")
-# parser.add_argument("--base_lr", type=float,  default=0.01,
-#                     help="segmentation network learning rate")
-parser.add_argument("--img_size_height", type=int,
-                    default=352, help="input patch size of network input")
-parser.add_argument("--img_size_width", type=int,
-                    default=704, help="input patch size of network input")  # make it the same param with the upper input_*
+# parser.add_argument("--img_size_height", type=int,
+#                     default=352, help="input patch size of network input")
+# parser.add_argument("--img_size_width", type=int,
+#                     default=1216, help="input patch size of network input")  # make it the same param with the upper input_*
 parser.add_argument("--n_skip", type=int,
                     default=3, help="using number of skip-connect, default is num")
 parser.add_argument("--vit_name", type=str,
@@ -173,10 +166,8 @@ def compute_errors(gt, pred):
 
     return [silog, abs_rel, log10, rms, sq_rel, log_rms, d1, d2, d3]
 
-
 def block_print():
     sys.stdout = open(os.devnull, "w")
-
 
 def enable_print():
     sys.stdout = sys.__stdout__
@@ -187,7 +178,6 @@ def get_num_lines(file_path):
     lines = f.readlines()
     f.close()
     return len(lines)
-
 
 def colorize(value, vmin=None, vmax=None, cmap="Greys"):
     value = value.cpu().numpy()[:, :, :]
@@ -208,7 +198,6 @@ def colorize(value, vmin=None, vmax=None, cmap="Greys"):
 
     return img.transpose((2, 0, 1))
 
-
 def normalize_result(value, vmin=None, vmax=None):
     value = value.cpu().numpy()[0, :, :]
 
@@ -221,296 +210,6 @@ def normalize_result(value, vmin=None, vmax=None):
         value = value * 0.
 
     return np.expand_dims(value, 0)
-
-"""
-def set_misc(model):
-    if args.bn_no_track_stats:
-        print("Disabling tracking running stats in batch norm layers")
-        model.apply(bn_init_as_tf)
-
-    if args.fix_first_conv_blocks:
-        if "resne" in args.encoder:
-            fixing_layers = ["base_model.conv1", "base_model.layer1.0", "base_model.layer1.1", ".bn"]
-        else:
-            fixing_layers = ["conv0", "denseblock1.denselayer1", "denseblock1.denselayer2", "norm"]
-        print("Fixing first two conv blocks")
-    elif args.fix_first_conv_block:
-        if "resne" in args.encoder:
-            fixing_layers = ["base_model.conv1", "base_model.layer1.0", ".bn"]
-        else:
-            fixing_layers = ["conv0", "denseblock1.denselayer1", "norm"]
-        print("Fixing first conv block")
-    else:
-        if "resne" in args.encoder:
-            fixing_layers = ["base_model.conv1", ".bn"]
-        else:
-            fixing_layers = ["conv0", "norm"]
-        print("Fixing first conv layer")
-
-    for name, child in model.named_children():
-        if not "encoder" in name:
-            continue
-        for name2, parameters in child.named_parameters():
-            # print(name, name2)
-            if any(x in name2 for x in fixing_layers):
-                parameters.requires_grad = False
-"""
-
-
-"""
-# check loaded data(kitti)
-import matplotlib.pyplot as plt
-import numpy as np
-def custom_imshow(img): 
-    img = img.cpu().numpy()
-    plt.imshow(np.transpose(img, (1, 2, 0))) 
-    plt.show()
-def check_dataloader(): 
-
-    args.distributed = False
-    dataloader = BtsDataLoader(args, "train")
-    dataloader_eval = BtsDataLoader(args, "online_eval")
-
-    
-    global_step = 0
-    steps_per_epoch = len(dataloader.data)
-    num_total_steps = args.num_epochs * steps_per_epoch
-    epoch = global_step // steps_per_epoch
-
-
-    
-    maximum = 0
-    # for batch_idx, sample_batched in enumerate(dataloader.data): 
-    for sample_batched in tqdm(dataloader.data):
-    
-        image = torch.autograd.Variable(sample_batched["image"].cuda(args.gpu, non_blocking=True))
-        focal = torch.autograd.Variable(sample_batched["focal"].cuda(args.gpu, non_blocking=True))
-        depth_gt = torch.autograd.Variable(sample_batched["depth"].cuda(args.gpu, non_blocking=True))
-
-
-        # print("batch_idx:", batch_idx)
-        # print("shape:", image.shape)  # (batch, 3, 352, 704)
-        # print("focal:", focal.shape)  # (batch)
-        # print("depth_gt:", depth_gt.shape)  # (batch, 1, 352, 704)
-        # print("depth======:", depth_gt)
-
-        gt_list = depth_gt.view(-1)
-        gt_list = list(set(gt_list.cpu().numpy()))
-        # print(gt_list)
-        new = max(gt_list)
-
-        if new > maximum:
-            maximum = new
-            print(maximum)
-    
-        # custom_imshow(image[0]) 
-def check_kitti_on_model():
-    args.distributed = False
-    config_vit = CONFIGS_ViT_seg[args.vit_name]
-    config_vit.n_classes = args.num_classes
-    config_vit.n_skip = args.n_skip
-    if args.vit_name.find("R50") != -1:
-        # config_vit.patches.grid = (int(args.img_size / args.patches_size), int(args.img_size / args.patches_size))
-        config_vit.patches.grid = (int(args.img_size_height / args.patches_size), int(args.img_size_width / args.patches_size))
-    args.img_size = [args.img_size_height, args.img_size_width]
-    
-    # dataloader
-    dataloader = BtsDataLoader(args, "train")
-    dataloader_eval = BtsDataLoader(args, "online_eval")
-
-    
-    global_step = 0
-    steps_per_epoch = len(dataloader.data)
-    num_total_steps = args.num_epochs * steps_per_epoch
-    epoch = global_step // steps_per_epoch
-
-    # import model
-    model = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-
-    # epochs
-    for batch_idx, sample_batched in tqdm(dataloader.data): 
-        image = torch.autograd.Variable(sample_batched["image"].cuda(args.gpu, non_blocking=True))
-        focal = torch.autograd.Variable(sample_batched["focal"].cuda(args.gpu, non_blocking=True))
-        depth_gt = torch.autograd.Variable(sample_batched["depth"].cuda(args.gpu, non_blocking=True))
-
-        print("=====================input======================")
-        print("image: ", image.shape)
-        print("focal:", focal.shape)
-        print("depth: ", depth_gt.shape)
-
-        output = model(image).cuda()
-
-        print("=====================output======================")
-        print("output shape: ", output.shape)
-
-        # # imshow gt and output
-        # custom_imshow(depth_gt[0]) 
-        # custom_imshow(output[0].detach()) 
-
-"""
-
-
-"""        
-def train():
-    # logging.info(str(args))
-    args.distributed = False
-    config_vit = CONFIGS_ViT_seg[args.vit_name]
-    config_vit.n_classes = args.num_classes
-    config_vit.n_skip = args.n_skip
-    if args.vit_name.find("R50") != -1:
-        # config_vit.patches.grid = (int(args.img_size / args.patches_size), int(args.img_size / args.patches_size))
-        config_vit.patches.grid = (int(args.img_size_height / args.patches_size), int(args.img_size_width / args.patches_size))
-    args.img_size = [args.img_size_height, args.img_size_width]
-
-    # import model
-    model = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)
-    model.train()
-    
-    num_params = sum([np.prod(p.size()) for p in model.parameters()])
-    print("Total number of parameters: {}".format(num_params))
-    num_params_update = sum([np.prod(p.shape) for p in model.parameters() if p.requires_grad])
-    print("Total number of learning parameters: {}".format(num_params_update))
-    
-    model = torch.nn.DataParallel(model)
-    model.cuda()
-
-    global_step = 0
-
-    # Training parameters
-    base_lr = args.base_lr
-    # optimizer = torch.optim.AdamW([{"params": model.module.encoder.parameters(), "weight_decay": args.weight_decay},
-    #                                {"params": model.module.decoder.parameters(), "weight_decay": 0}],
-    #                               lr=args.learning_rate, eps=args.adam_eps)
-    optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
-    
-    # dataloader
-    dataloader = BtsDataLoader(args, "train")
-    dataloader_eval = BtsDataLoader(args, "online_eval")
-    
-    # # Logging
-    # if not args.multiprocessing_distributed or (args.multiprocessing_distributed and args.rank % ngpus_per_node == 0):
-    #     writer = SummaryWriter(args.log_directory + "/" + args.model_name + "/summaries", flush_secs=30)
-    #     if args.do_online_eval:
-    #         if args.eval_summary_directory != "":
-    #             eval_summary_path = os.path.join(args.eval_summary_directory, args.model_name)
-    #         else:
-    #             eval_summary_path = os.path.join(args.log_directory, "eval")
-    #         eval_summary_writer = SummaryWriter(eval_summary_path, flush_secs=30)
-
-    num_classes = args.num_classes
-    silog_criterion = silog_loss(variance_focus=args.variance_focus)
-    
-    start_time = time.time()
-    duration = 0
-
-    num_log_images = args.batch_size
-    end_learning_rate = args.end_learning_rate if args.end_learning_rate != -1 else 0.1 * args.learning_rate
-
-    var_sum = [var.sum() for var in model.parameters() if var.requires_grad]
-    var_cnt = len(var_sum)
-    var_sum = np.sum(var_sum)
-
-    print("Initial variables" sum: {:.3f}, avg: {:.3f}".format(var_sum, var_sum/var_cnt))
-    
-    steps_per_epoch = len(dataloader.data)
-    num_total_steps = args.num_epochs * steps_per_epoch
-    epoch = global_step // steps_per_epoch
-
-    while epoch < args.num_epochs:
-            # if args.distributed:
-            #     dataloader.train_sampler.set_epoch(epoch)
-
-            for step, sample_batched in enumerate(dataloader.data):
-                optimizer.zero_grad()
-                before_op_time = time.time()
-
-                image = torch.autograd.Variable(sample_batched["image"].cuda(args.gpu, non_blocking=True))
-                focal = torch.autograd.Variable(sample_batched["focal"].cuda(args.gpu, non_blocking=True))
-                depth_gt = torch.autograd.Variable(sample_batched["depth"].cuda(args.gpu, non_blocking=True))
-
-                depth_est = model(image)
-
-                mask = depth_gt > 1.0
-            
-                loss = silog_criterion.forward(depth_est, depth_gt, mask.to(torch.bool))
-                loss.backward()
-                for param_group in optimizer.param_groups:
-                    current_lr = (args.learning_rate - end_learning_rate) * (1 - global_step / num_total_steps) ** 0.9 + end_learning_rate
-                    param_group["lr"] = current_lr
-
-                optimizer.step()
-
-    batch_size = args.batch_size * args.n_gpu
-
-    # writer = SummaryWriter(snapshot_path + "/log")
-    iter_num = 0
-    max_epoch = args.max_epochs
-    max_iterations = args.max_epochs * len(dataloader.data)  # max_epoch = max_iterations // len(trainloader) + 1
-    logging.info("{} iterations per epoch. {} max iterations ".format(len(dataloader.data), max_iterations))
-    best_performance = 0.0
-    iterator = tqdm(range(max_epoch), ncols=70)
-
-    for epoch_num in iterator:
-        # epochs
-        for sample_batched in tqdm(dataloader.data): 
-            image = torch.autograd.Variable(sample_batched["image"].cuda(args.gpu, non_blocking=True))
-            focal = torch.autograd.Variable(sample_batched["focal"].cuda(args.gpu, non_blocking=True))
-            depth_gt = torch.autograd.Variable(sample_batched["depth"].cuda(args.gpu, non_blocking=True))
-
-            mask = depth_gt > 1.0
-
-            depth_est = model(image)
-
-            loss = silog_criterion.forward(depth_est, depth_gt, mask.to(torch.bool))
-            # loss_ce = ce_loss(depth_est, depth_gt[:].long())
-            # loss_dice = dice_loss(depth_est, depth_gt, softmax=True)
-            # loss = 0.5 * loss_ce + 0.5 * loss_dice
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            lr_ = base_lr * (1.0 - iter_num / max_iterations) ** 0.9
-            for param_group in optimizer.param_groups:
-                param_group["lr"] = lr_
-
-
-            iter_num = iter_num + 1
-            # writer.add_scalar("info/lr", lr_, iter_num)
-            # writer.add_scalar("info/total_loss", loss, iter_num)
-            # writer.add_scalar("info/loss_ce", loss_ce, iter_num)
-
-            # logging.info("iteration %d : loss : %f, loss_ce: %f" % (iter_num, loss.item(), loss_ce.item()))
-            logging.info("iteration %d : loss : %f, loss_ce: %f" % (iter_num, loss.item(), loss.item()))
-
-            if iter_num % 20 == 0:
-                image = image[1, 0:1, :, :]
-                image = (image - image.min()) / (image.max() - image.min())
-                # writer.add_image("train/Image", image, iter_num)
-                depth_est = torch.argmax(torch.softmax(depth_est, dim=1), dim=1, keepdim=True)
-                # writer.add_image("train/Prediction", depth_est[1, ...] * 50, iter_num)
-                labs = depth_gt[1, ...].unsqueeze(0) * 50
-                # writer.add_image("train/GroundTruth", labs, iter_num)
-
-        save_interval = 50  # int(max_epoch/6)
-        if epoch_num > int(max_epoch / 2) and (epoch_num + 1) % save_interval == 0:
-            # save_mode_path = os.path.join(snapshot_path, "epoch_" + str(epoch_num) + ".pth")
-            # torch.save(model.state_dict(), save_mode_path)
-            # logging.info("save model to {}".format(save_mode_path))
-            logging.info("save model to 1")
-
-        if epoch_num >= max_epoch - 1:
-            # save_mode_path = os.path.join(snapshot_path, "epoch_" + str(epoch_num) + ".pth")
-            # torch.save(model.state_dict(), save_mode_path)
-            # logging.info("save model to {}".format(save_mode_path))
-            logging.info("save model to 2")
-            iterator.close()
-            break
-
-    # writer.close()
-    return "Training Finished!"
-"""
-
-
-
 
 
 
@@ -602,23 +301,23 @@ def train(gpu, ngpus_per_node, args):
     config_vit = CONFIGS_ViT_seg[args.vit_name]
     config_vit.n_classes = args.num_classes
     config_vit.n_skip = args.n_skip
+
+    # Reinitialize input dim when random crop is True (for TransUNet not MixerUnet)
+    if args.do_random_crop == "True":
+        args.input_height, args.input_width = args.rcrop_height, args.rcrop_width
+
+    # If Embedding with ResNet
     if args.vit_name.find("R50") != -1:
-        # config_vit.patches.grid = (int(args.img_size / args.patches_size), int(args.img_size / args.patches_size))
-        config_vit.patches.grid = (int(args.img_size_height / args.patches_size), int(args.img_size_width / args.patches_size))
+        config_vit.patches.grid = (int(args.input_height / args.patches_size), int(args.input_width / args.patches_size))
     
-    # for MLP Mixer, the input dimenstion of Mixer must be fixed
-    if config_vit.name.find("Mixer") != -1:
-        args.img_size = [352, 1216]
-    else:
-        args.img_size = [args.img_size_height, args.img_size_width]
+    # img_size: [352, 704] for TransUNet(with random_crop during training)
+    # img_size: [352, 1216] for MixerUNet and TransUNet(withought random_crop)
+    args.img_size = [args.input_height, args.input_width]
+
     # Create model
     model = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)
     model.load_from(weights=np.load(config_vit.pretrained_path))
     model.train()
-    # # initialize model
-    # model.decoder.apply(weights_init_xavier)
-    # model.segmentation_head.apply(weights_init_xavier)
-    # set_misc(model)
 
     num_params = sum([np.prod(p.size()) for p in model.parameters()])
     print("Total number of parameters: {}".format(num_params))
@@ -650,9 +349,6 @@ def train(gpu, ngpus_per_node, args):
     best_eval_steps = np.zeros(9, dtype=np.int32)
 
     # Training parameters
-    # optimizer = torch.optim.AdamW([{"params": model.module.encoder.parameters(), "weight_decay": args.weight_decay},
-    #                                {"params": model.module.decoder.parameters(), "weight_decay": 0}],
-    #                               lr=args.learning_rate, eps=args.adam_eps)
     optimizer = optim.SGD(model.parameters(), lr=args.learning_rate, momentum=0.9, weight_decay=0.0001)
 
     model_just_loaded = False
@@ -684,9 +380,6 @@ def train(gpu, ngpus_per_node, args):
 
     cudnn.benchmark = True
 
-    if config_vit.name.find("Mixer") != -1:
-        args.do_random_crop = False
-
     dataloader = BtsDataLoader(args, "train")
     dataloader_eval = BtsDataLoader(args, "online_eval")
 
@@ -703,8 +396,6 @@ def train(gpu, ngpus_per_node, args):
 
     # # loss function
     silog_criterion = silog_loss(variance_focus=args.variance_focus)
-    # ce_loss = nn.CrossEntropyLoss()
-    # dice_loss = DiceLoss(num_classes)
 
     start_time = time.time()
     duration = 0
@@ -716,7 +407,6 @@ def train(gpu, ngpus_per_node, args):
     var_cnt = len(var_sum)
     var_sum = torch.FloatTensor(var_sum)
     var_sum = torch.sum(var_sum)
-    # var_sum = np.sum(var_sum)
 
     print("Initial variables sum: {:.3f}, avg: {:.3f}".format(var_sum, var_sum/var_cnt))
 
@@ -739,14 +429,10 @@ def train(gpu, ngpus_per_node, args):
             focal = torch.autograd.Variable(sample_batched["focal"].cuda(args.gpu, non_blocking=True))
             depth_gt = torch.autograd.Variable(sample_batched["depth"].cuda(args.gpu, non_blocking=True))
             
-            
-            depth_est = model(image, reshape_size = args.img_size)
+            depth_est = model(image, reshape_size = args.img_size)  # "reshape_size" for reshaping (n_patches, D) => (n_patches, H/16, W/16) before decoding
  
             mask = depth_gt > 1.0
 
-            # loss_ce = ce_loss(depth_est[mask], depth_gt[mask])
-            # loss_dice = dice_loss(depth_est[mask], depth_gt[mask], softmax=True)
-            # loss = 0.5 * loss_ce + 0.5 * loss_dice
             loss = silog_criterion.forward(depth_est, depth_gt, mask.to(torch.bool))
             avg_loss += loss / args.eval_freq
 
@@ -769,7 +455,6 @@ def train(gpu, ngpus_per_node, args):
                 var_cnt = len(var_sum)
                 var_sum = torch.FloatTensor(var_sum)
                 var_sum = torch.sum(var_sum)
-                # var_sum = np.sum(var_sum)
                 examples_per_sec = args.batch_size / duration * args.log_freq
                 duration = 0
                 time_sofar = (time.time() - start_time) / 3600
@@ -829,11 +514,13 @@ def train(gpu, ngpus_per_node, args):
                             old_best_name = "/model-{}-best_{}_{:.5f}".format(old_best_step, eval_metrics[i], old_best)
                             model_path = args.log_directory + "/" + args.model_name + old_best_name
                             if os.path.exists(model_path):
-                                # # linux
+                                ##### For Linux
                                 # command = "rm {}".format(model_path)
                                 # os.system(command)
-                                # window
+                                #####
+                                ##### For Windows
                                 os.remove(model_path)
+                                #####
                             best_eval_steps[i] = global_step
                             model_save_name = "/model-{}-best_{}_{:.5f}".format(global_step, eval_metrics[i], measure)
                             print("New best for {}. Saving model: {}".format(eval_metrics[i], model_save_name))
@@ -848,7 +535,6 @@ def train(gpu, ngpus_per_node, args):
                     eval_summary_writer.flush()
                 model.train()
                 block_print()
-                # set_misc(model)
                 enable_print()
 
             model_just_loaded = False
@@ -864,38 +550,40 @@ def main():
         return -1
 
     model_filename = args.model_name + ".py"
-    # # Linux
+    ##### Linux
     # command = "mkdir " + args.log_directory + "/" + args.model_name
     # os.system(command)
-    # Windows
+    ##### Windows
     if not os.path.isdir(args.log_directory + "/" + args.model_name):
         os.mkdir(args.log_directory + "/" + args.model_name)
 
     import shutil
     args_out_path = args.log_directory + "/" + args.model_name + "/" + sys.argv[1]
-    # Linux
+    ##### Linux
     # command = "copy " + sys.argv[1] + " " + args_out_path
     # os.system(command)
-    # Windows
+    ##### Windows
     shutil.copyfile(sys.argv[1], args_out_path)
 
     if args.checkpoint_path == "":
         model_out_path = args.log_directory + "/" + args.model_name + "/" + model_filename
-        # # Linux
+        ##### Linux
         # command = "copy bts.py " + model_out_path
         # os.system(command)
-        # Windows
+        ##### Windows
         shutil.copy2("models/model.py", model_out_path)
         aux_out_path = args.log_directory + "/" + args.model_name + "/."
-        # # Linux
+
+        ##### Linux
         # command = "copy bts_main.py " + aux_out_path
         # os.system(command)
-        # Windows
+        ##### Windows
         shutil.copy2("main.py", aux_out_path)
+
         # # Linux
         # command = "copy bts_dataloader.py " + aux_out_path
         # os.system(command)
-        # Windows
+        ##### Windows
         shutil.copy2("dataloader.py", aux_out_path)
     else:
         loaded_model_dir = os.path.dirname(args.checkpoint_path)
@@ -903,10 +591,10 @@ def main():
         loaded_model_filename = loaded_model_name + ".py"
 
         model_out_path = args.log_directory + "/" + args.model_name + "/" + model_filename
-        # # Linux
+        ##### Linux
         # command = "copy " + loaded_model_dir + "/" + loaded_model_filename + " " + model_out_path
         # os.system(command)
-        # Windows
+        ##### Windows
         shutil.copy2(loaded_model_dir + "/" + loaded_model_filename, model_out_path)
     
     torch.cuda.empty_cache()
@@ -929,26 +617,4 @@ def main():
         train(args.gpu, ngpus_per_node, args)
 
 if __name__ == "__main__":
-    # # check dataloader
-    # check_dataloader()
-    
-    # # check model
-    # kitti = torch.randn(1, 3, 352, 704).cuda()
-    
-    # config_vit = CONFIGS_ViT_seg[args.vit_name]
-    # config_vit.n_classes = args.num_classes
-    # config_vit.n_skip = args.n_skip
-    # if args.vit_name.find("R50") != -1:
-    #     # config_vit.patches.grid = (int(args.img_size / args.patches_size), int(args.img_size / args.patches_size))
-    #     config_vit.patches.grid = (int(args.img_size_height / args.patches_size), int(args.img_size_width / args.patches_size))
-    # args.img_size = [args.img_size_height, args.img_size_width]
-    # model = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-
-    # output = model(kitti)
-    # print("output of TransUnet shape:", output.shape)
-
-    # # check model with kitti dataloader
-    # check_kitti_on_model()
-
-    # # train
     main()
