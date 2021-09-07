@@ -1,5 +1,5 @@
-# TransUnet_depthEstimation
-Using TransUnet for depth estimation with kitti dataset and Comparing ViT with MLP-Mixer
+# MixerUNet from TransUNet (Monocular Depth Estimation)
+Using TransUnet for depth estimation with kitti dataset and Comparing ViT (TransUNet) with MLP-Mixer (MixerUNet).
 
 > Code is quite messy, will update ASAP
 
@@ -29,7 +29,7 @@ semantic segmentation model "[TransUnet](https://github.com/Beckschen/TransUNet)
 │            └── data_depth_annotated  
 │                   ├── 2011_09_26_drive_0001_sync  
 │                   └── ...  
-└── TransUNet_depth  
+└── MixerUNet  
      ├── checkpoints  
      ├── models 
      ├── outputs  
