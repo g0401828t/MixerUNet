@@ -61,23 +61,24 @@ python main.py arguments_test_MixerUNet.py
 
 
 ## Implementation Details
+### TransUNet
 <img width="1101" alt="image" src="https://user-images.githubusercontent.com/55650445/128836980-5f419cd3-d213-406b-9a2c-6dd7efe52732.png">
 
-### Image Loader
+#### Image Loader
 Kitti dataset consists of images with size of [375, 1242] or [376, 1241]  
 When loading the data, dataloader.py crops the images to [352, 1216] which is dividable by 16.  
 TransUNet code only takes inputs with same width and height[224, 224]. However, Kitti dataset has different sizes of width and height.  
 So I modified the TransUNet code to take inputs with different sized width and height.  
 Done by modifying the Encoder part.  
-### Training (without position embeddings)
+#### Training (without position embeddings)
 When training, images are random cropped to [352, 704].  
 The TransUnet's reshape part between Encoder and Decoder relys on the input image size so I modified the code for this issue.  
 Modified the class DecoderCup() in model.py
-### Online Eval
+#### Online Eval
 When evaluation, images are not random croped. So the input size is [352, 1216].  
 Due to this, the dimenstion for reshaping in between encoder and decoder was an issue.  
 I modified the class DecoderCup() def forward() in model.py by adding reshape_size parameter to reshape the input of decoder with respect to the input image shape.   
-### Testing and saving the output image(depth_estimated).
+#### Testing and saving the output image(depth_estimated).
 Because trained without position embeddings,
 when loading state_dict => model.load_state_dict(checkpoint['model'], strict=False)
 to not load position embeddings weight or any other missing weights.
@@ -86,7 +87,7 @@ to not load position embeddings weight or any other missing weights.
 
 
 
-## 1st Trial (without pretraining and position enmbeddings)
+### 1st Trial (without pretraining and position enmbeddings)
 after 16 epochs  
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
@@ -97,7 +98,7 @@ after 16 epochs
 <2011_09_26_drive_0013_sync_0000000085.png>
 ![image](https://user-images.githubusercontent.com/55650445/128864079-a48d94bc-10e6-4738-8f3b-2be025d8cb4e.png)
 
-## 2nd Trial (pretrained weights without position embeddings)
+### 2nd Trial (pretrained weights without position embeddings)
 after 11 epochs  
 |best|d1|d2|d3|silog|rms|abs_rel|log_rms|log10|sq_rel|
 |------|---|---|---|---|---|---|---|---|---|
@@ -117,8 +118,11 @@ after 11 epochs
 ### Interim check  
 ![image](https://user-images.githubusercontent.com/55650445/129292919-56a41562-20a3-4296-a97c-05b5fb0495aa.png)  
 Not predicting well on bright & far distance (e.g. sky, high contrast pixels)
+     
+## MixerUNet
+<img width="980" alt="image" src="https://user-images.githubusercontent.com/55650445/132350360-2aa1e474-4190-4d11-83b2-2e2686c4f2ff.png">
 
-## 3rd Trial (ViT -> MLP-Mixer)  
+### 3rd Trial (ViT -> MLP-Mixer)  
 *Limitations*  
 1. Due to mlp, the encoding input is fixed and in training and testing, the input size must be the same.  
     Can not random crop the input (352, 1216) to (352, 704) when training.  
@@ -149,7 +153,7 @@ after 18 epochs
 
 
      
-## 4th Trial (token mixing mlp dim: 384 -> 384*8)
+### 4th Trial (token mixing mlp dim: 384 -> 384*8)
 Did not considered the input size.  
 For standard MLP-Mixer, the input size was 224 so the input number of tokens was (224/16)^2 = 196  
 However, kitti dataset input size is 352x1216 so the input number of tokens is (352*1216/16^2) = 1672 which is about 8.5 times larger than 384.  
@@ -172,7 +176,7 @@ after 17 epochs, lr 1e-4 => 1e-3
 <2011_09_26_drive_0117_sync_0000000572.png>  
 <img width="1634" alt="image" src="https://user-images.githubusercontent.com/55650445/131207838-f4220015-64aa-47cf-8020-81b3b01c80f8.png">
 
-# Results
+## Results
 
 |RGB|TransUNet|TransUNet_pretrained|MixerUNet|MixerUNet_pretrained|
 |---|---|---|---|---|
