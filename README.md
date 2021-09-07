@@ -1,7 +1,6 @@
 # MixerUNet from TransUNet (Monocular Depth Estimation)
 Using TransUnet for depth estimation with kitti dataset and Comparing ViT (TransUNet) with MLP-Mixer (MixerUNet).
 
-> Code is quite messy, will update ASAP
 
 ## Reference
 depth estimation model "[BTS](https://github.com/cogaplex-bts/bts)" => Refrence for dataloading and training, testing code.
