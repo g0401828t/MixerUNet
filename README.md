@@ -1,5 +1,5 @@
 # TransUnet_depthEstimation
-Using TransUnet for depth estimation with kitti dataset  
+Using TransUnet for depth estimation with kitti dataset and Comparing ViT with MLP-Mixer
 
 > Code is quite messy, will update ASAP
 
