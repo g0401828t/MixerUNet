@@ -188,4 +188,4 @@ after 17 epochs, lr 1e-4 => 1e-3
 - MLP-Mixer's biggest limitation is fixed input dim which cause training and testing image size  to be the same. This is crucial because being not available to train with random cropped image will limit the model's performance.
     - Curious whether Random Crop and Resizing it back to the same size of the original input will affect the model's performance and how will it affect it.
 - Despite the limitation of MLP-Mixer, we can see that the performance mlp_mixer gives us is quite good compared to ViT.
-- Also, although MixerUNet(MLP-Mixer) has more parameters, the testing time is less than TransUNet(ViT)
+- Also, although MixerUNet(MLP-Mixer) has more parameters, the testing time is less than TransUNet(ViT). More computations are needed for TransUNet(ViT)
