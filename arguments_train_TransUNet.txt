@@ -1,7 +1,7 @@
 --model_name TransUNet
---checkpoint_path ./outputs/TransUnet/
 --vit_name R50-ViT-B_16
 
-
+--do_random_crop True
 --do_kb_crop
---save_lpg
+--do_online_eval
+--garg_crop

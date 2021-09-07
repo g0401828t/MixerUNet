@@ -47,8 +47,6 @@ parser = argparse.ArgumentParser(description='BTS PyTorch implementation.', from
 parser.convert_arg_line_to_args = convert_arg_line_to_args
 
 parser.add_argument('--model_name', type=str, help='model name', default='bts_eigen_v2')
-# parser.add_argument('--encoder', type=str, help='type of encoder, vgg or desenet121_bts or densenet161_bts',
-#                     default='densenet161_bts')
 parser.add_argument('--data_path', type=str, help='path to the data', default="../dataset/kitti_dataset/")
 parser.add_argument('--filenames_file', type=str, help='path to the filenames text file', default="./train_test_inputs/eigen_test_files_with_gt.txt")
 parser.add_argument('--input_height', type=int, help='input height', default=352)
@@ -62,33 +60,17 @@ parser.add_argument('--bts_size', type=int,   help='initial num_filters in bts',
 
 
 # # # TransUnet args
-# parser.add_argument("--root_path", type=str,
-#                     default="../data/Synapse/train_npz", help="root dir for data")
-# parser.add_argument("--dataset", type=str,
-#                     default="Synapse", help="experiment_name")
-# parser.add_argument("--list_dir", type=str,
-#                     default="./lists/lists_Synapse", help="list dir")
 parser.add_argument("--num_classes", type=int,
                     default=1, help="output channel of network")
-# parser.add_argument("--max_iterations", type=int,
-#                     default=30000, help="maximum epoch number to train")
 parser.add_argument("--max_epochs", type=int,
                     default=150, help="maximum epoch number to train")
-# parser.add_argument("--batch_size", type=int,
-#                     default=24, help="batch_size per gpu")
 parser.add_argument("--n_gpu", type=int, default=1, help="total gpu")
-# parser.add_argument("--deterministic", type=int,  default=1,
-#                     help="whether use deterministic training")
 parser.add_argument("--base_lr", type=float,  default=0.01,
                     help="segmentation network learning rate")
-# parser.add_argument("--img_size", type=int,
-#                     default=224, help="input patch size of network input")
 parser.add_argument("--img_size_height", type=int,
                     default=352, help="input patch size of network input")
 parser.add_argument("--img_size_width", type=int,
                     default=1216, help="input patch size of network input")  # make it the same param with the upper input_*
-# parser.add_argument("--seed", type=int,
-#                     default=1234, help="random seed")
 parser.add_argument("--n_skip", type=int,
                     default=3, help="using number of skip-connect, default is num")
 parser.add_argument("--vit_name", type=str,

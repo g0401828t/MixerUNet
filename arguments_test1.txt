@@ -1,9 +1,0 @@
---model_name TransUNet
---checkpoint_path ./outputs/TransUnet_Mixer_changed_token_dim_pretrained/model-254000-best_log_rms_0.12124
---vit_name R50-Mixer-My_16
-
-
---do_kb_crop
---save_lpg
-
---num_epochs 1

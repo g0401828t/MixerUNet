@@ -1,0 +1,7 @@
+--model_name MixerUNet
+--checkpoint_path ./outputs/MixerUNet/model-5-best_abs_rel_2.53494
+--vit_name R50-Mixer-My_16
+
+
+--do_kb_crop
+--save_lpg

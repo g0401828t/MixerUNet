@@ -42,7 +42,7 @@ parser.add_argument("--model_name",                type=str,   help="model name"
 # Dataset
 parser.add_argument("--dataset",                   type=str,   help="dataset to train on, kitti or nyu", default="kitti")
 parser.add_argument("--data_path",                 type=str,   help="path to the data", default="../dataset/kitti_dataset/")
-parser.add_argument("--gt_path",                   type=str,   help="path to the groundtruth data", default="../dataset/kitti_dataset/data_depth_annotated/all/")
+parser.add_argument("--gt_path",                   type=str,   help="path to the groundtruth data", default="../dataset/kitti_dataset/data_depth_annotated/")
 parser.add_argument("--filenames_file",            type=str,   help="path to the filenames text file", default="./train_test_inputs/eigen_train_files_with_gt.txt")
 parser.add_argument("--input_height",              type=int,   help="input image height", default=352)
 parser.add_argument("--input_width",               type=int,   help="input image width",  default=1216)
@@ -90,7 +90,7 @@ parser.add_argument("--multiprocessing_distributed",           help="Use multi-p
 # # Online eval
 parser.add_argument("--do_online_eval",                        help="if set, perform online eval in every eval_freq steps", action="store_true")
 parser.add_argument("--data_path_eval",            type=str,   help="path to the data for online evaluation", default="../dataset/kitti_dataset/")
-parser.add_argument("--gt_path_eval",              type=str,   help="path to the groundtruth data for online evaluation", default="../dataset/kitti_dataset/data_depth_annotated/all/")
+parser.add_argument("--gt_path_eval",              type=str,   help="path to the groundtruth data for online evaluation", default="../dataset/kitti_dataset/data_depth_annotated/")
 parser.add_argument("--filenames_file_eval",       type=str,   help="path to the filenames text file for online evaluation", default="./train_test_inputs/eigen_test_files_with_gt.txt")
 parser.add_argument("--min_depth_eval",            type=float, help="minimum depth for evaluation", default=1e-3)
 parser.add_argument("--max_depth_eval",            type=float, help="maximum depth for evaluation", default=80)
