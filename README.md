@@ -39,6 +39,8 @@ semantic segmentation model "[TransUnet](https://github.com/Beckschen/TransUNet)
 ~~~
 
 ### 3. Training
+Need to change args.model_name to what ever you like.  
+args.vit_name: choose between R50-ViT-B_16 (for ViT), R50-Mixer-My_16 (MLP-Mixer).  
 - For training TransUNet  
 ~~~
 python main.py arguments_train_TransUNet.py
@@ -48,6 +50,7 @@ python main.py arguments_train_TransUNet.py
 python main.py arguments_train_MixerUNet.py
 ~~~
 ### 4. Testing and saving results
+Need to change args.checkpoint_path "./outputs/<args.model_name>/<saved model>" to the model trained from above.  
 - For Testing TransUNet  
 ~~~
 python main.py arguments_test_TransUNet.py
